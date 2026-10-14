@@ -154,27 +154,3 @@ Backend:
 Frontend:
 - VITE_API_URL
 
-Consultar los archivos .env.example.
-
-## Estado del proyecto
-
-Etapa 1: configuración y diseño inicial.
-
-Pendiente:
-
-- Conexión MongoDB Atlas
-- Modelos Mongoose
-- CRUD Videojuego
-- CRUD Partida
-- Actualización de logros
-- Resumen calculado
-- Middleware de errores
-- Cinco pantallas conectadas
-- Despliegue en Render
-
-## URLs públicas
-
-Backend: pendiente
-Frontend: pendiente
-
-## Fecha de entrega
