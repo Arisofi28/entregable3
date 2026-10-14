@@ -1,0 +1,87 @@
+.navbar {
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font: 700 25px 'Space Grotesk', sans-serif;
+  letter-spacing: -1.5px;
+}
+
+.brand-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 15px;
+  background: var(--blue);
+  display: grid;
+  place-items: center;
+  color: white;
+}
+
+.brand-accent {
+  color: var(--coral);
+}
+
+.nav-links {
+  display: flex;
+  gap: 36px;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+  color: var(--blue);
+}
+
+.player-pill {
+  background: white;
+  border-radius: 30px;
+  padding: 12px 18px;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  gap: 12px;
+}
+
+footer {
+  padding: 0 0 35px;
+  display: flex;
+  justify-content: space-between;
+  color: #7b88a6;
+  font-size: 12px;
+}
+
+footer strong {
+  color: #20294d;
+}
+
+@media (max-width: 650px) {
+  .navbar {
+    min-height: 0;
+    flex-wrap: wrap;
+    padding: 16px 0 12px;
+  }
+
+  .player-pill {
+    display: none;
+  }
+
+  .nav-links {
+    order: 3;
+    width: 100%;
+    gap: 16px;
+    padding-bottom: 8px;
+  }
+
+  footer {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
