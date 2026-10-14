@@ -1,0 +1,386 @@
+.terminal-page {
+  display: grid;
+  grid-template-columns: minmax(0, 1.75fr) minmax(250px, 0.78fr);
+  gap: 18px 20px;
+  align-items: start;
+  padding: 6px 0 36px;
+}
+
+.terminal-heading {
+  grid-column: 1 / -1;
+}
+
+.section-kicker {
+  color: var(--blue);
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 2px;
+}
+
+.terminal-heading h2 {
+  font-size: clamp(34px, 4vw, 48px);
+  letter-spacing: -1.5px;
+  margin: 8px 0 10px;
+}
+
+.term-caret {
+  color: var(--coral);
+  animation: term-blink 1s step-end infinite;
+}
+
+@keyframes term-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.terminal-heading p {
+  max-width: 560px;
+  color: #5d6d8c;
+  line-height: 1.55;
+  margin-bottom: 8px;
+}
+
+.terminal-window {
+  background: #10151a;
+  color: #e8fff8;
+  border-radius: 28px;
+  min-height: 640px;
+  display: flex;
+  flex-direction: column;
+  box-shadow:
+    0 0 0 1px #50f0c633,
+    0 24px 50px #10151a24;
+  color-scheme: dark;
+  cursor: text;
+}
+
+.terminal-window:focus-within {
+  box-shadow:
+    0 0 0 1px #50f0c688,
+    0 24px 50px #10151a33;
+}
+
+.terminal-chrome {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 18px;
+  background: #171d22;
+  border-radius: 28px 28px 0 0;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+}
+
+.chrome-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.dot-coral {
+  background: #f5685c;
+}
+
+.dot-yellow {
+  background: #f9d84a;
+}
+
+.dot-green {
+  background: #50b76d;
+}
+
+.chrome-title {
+  margin-left: 10px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #8aa9a2;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+}
+
+.chrome-live {
+  margin-left: auto;
+  color: #50f0c6;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chrome-live::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #50f0c6;
+  box-shadow: 0 0 8px #50f0c6;
+}
+
+.terminal-body {
+  flex: 1;
+  min-height: 430px;
+  max-height: 62vh;
+  overflow: auto;
+  padding: 22px 22px 8px;
+  font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 13.5px;
+  line-height: 1.55;
+  background-image: radial-gradient(#50f0c61c 1px, transparent 1px);
+  background-size: 17px 17px;
+  scrollbar-color: #50f0c655 transparent;
+}
+
+.terminal-window ::selection {
+  background: #50f0c644;
+  color: white;
+}
+
+.term-line {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.term-command {
+  margin-top: 16px;
+  color: white;
+}
+
+.terminal-body > .term-command:first-child {
+  margin-top: 0;
+}
+
+.term-spacer {
+  height: 12px;
+}
+
+.tone-dim {
+  color: #8aa9a2;
+}
+
+.tone-text {
+  color: #e8fff8;
+}
+
+.tone-ok {
+  color: #50f0c6;
+}
+
+.tone-error {
+  color: #ffb0a8;
+}
+
+.prompt-user {
+  color: #f9d84a;
+}
+
+.prompt-at {
+  color: #9fb0b8;
+}
+
+.prompt-path {
+  color: #80d8f7;
+}
+
+.prompt-sign {
+  color: #50f0c6;
+}
+
+.terminal-form {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0;
+  padding: 10px 22px 18px;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 13.5px;
+}
+
+.terminal-label {
+  flex: none;
+}
+
+.terminal-form input {
+  flex: 1 1 12rem;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: white;
+  caret-color: #50f0c6;
+  font: inherit;
+  padding: 0;
+}
+
+.terminal-hint {
+  margin: -6px 0 0;
+  padding: 0 22px 16px;
+  color: #8aa9a2;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.terminal-side {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.side-card {
+  background: white;
+  border-radius: 24px;
+  padding: 22px;
+  box-shadow: 0 10px 24px #4365a00d;
+}
+
+.side-card h3 {
+  margin: 8px 0 0;
+  font-size: 22px;
+}
+
+.active-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-height: 230px;
+}
+
+.active-icon {
+  width: 58px;
+  height: 58px;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  font-size: 28px;
+  margin-bottom: 16px;
+}
+
+.library-icon {
+  background: var(--blue);
+}
+
+.active-card p {
+  color: #6d7c98;
+  margin: 6px 0 14px;
+  font-size: 14px;
+}
+
+.active-card strong {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 40px;
+  letter-spacing: -1px;
+  line-height: 1;
+}
+
+.active-meta {
+  margin-top: 8px;
+  color: #8490a7;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.quick-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.quick-list button {
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: #f3f6ff;
+  border-radius: 14px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  transition: transform 0.2s, background 0.2s;
+}
+
+.quick-list button:hover {
+  transform: translateY(-2px);
+  background: #e7edff;
+}
+
+.quick-list code,
+.syntax-list code {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  color: var(--blue);
+  font-size: 12px;
+}
+
+.quick-list span,
+.syntax-list span {
+  color: #6d7c98;
+  font-size: 12px;
+}
+
+.syntax-list {
+  list-style: none;
+  padding: 0;
+  margin: 18px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.syntax-list li {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.manual-keys {
+  margin: 18px 0 0;
+  color: #8b98b0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+@media (max-width: 1000px) {
+  .terminal-page {
+    grid-template-columns: 1fr;
+  }
+
+  .terminal-window {
+    min-height: 560px;
+  }
+}
+
+@media (max-width: 650px) {
+  .terminal-heading h2 {
+    letter-spacing: -1px;
+  }
+
+  .terminal-body {
+    min-height: 360px;
+    padding: 16px 14px 8px;
+    font-size: 12.5px;
+  }
+
+  .terminal-form,
+  .terminal-hint {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .terminal-form input {
+    font-size: 16px;
+  }
+
+  .terminal-chrome {
+    padding: 14px;
+  }
+
+  .chrome-title {
+    letter-spacing: 0.06em;
+  }
+}

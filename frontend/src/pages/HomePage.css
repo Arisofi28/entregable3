@@ -9,57 +9,6 @@
   padding: 0 5%;
 }
 
-.navbar {
-  min-height: 100px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-}
-
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font: 700 25px 'Space Grotesk', sans-serif;
-  letter-spacing: -1.5px;
-}
-
-.brand-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 15px;
-  background: var(--blue);
-  display: grid;
-  place-items: center;
-  color: white;
-}
-
-.brand-accent {
-  color: var(--coral);
-}
-
-.nav-links {
-  display: flex;
-  gap: 36px;
-  font-weight: 700;
-  font-size: 14px;
-}
-
-.nav-links a:hover {
-  color: var(--blue);
-}
-
-.player-pill {
-  background: white;
-  border-radius: 30px;
-  padding: 12px 18px;
-  font-size: 12px;
-  font-weight: 700;
-  display: flex;
-  gap: 12px;
-}
-
 .hero {
   min-height: 420px;
   padding: 55px 7%;
@@ -300,12 +249,26 @@
   padding: 22px;
 }
 
-.game-genre {
-  color: var(--blue);
+.game-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.game-genre,
+.game-status {
   text-transform: uppercase;
   font-size: 10px;
   letter-spacing: 1px;
   font-weight: 700;
+}
+
+.game-genre {
+  color: var(--blue);
+}
+
+.game-status {
+  color: #8490a7;
 }
 
 .game-information h3 {
@@ -369,10 +332,11 @@
   color: #64729c;
 }
 
-.add-game-card span {
+.add-game-card a {
   color: var(--blue);
   font-size: 10px;
   font-weight: 700;
+  letter-spacing: 0.08em;
 }
 
 .empty-search {
@@ -469,22 +433,37 @@
   font-size: 15px;
 }
 
+.stat em {
+  font-style: normal;
+  color: #8aa9a2;
+  font-size: 12px;
+  font-weight: 600;
+}
+
 .checkpoint-note {
   color: #8aa9a2;
   font-size: 11px;
   margin: 25px 0 0;
 }
 
-footer {
-  padding: 0 0 35px;
-  display: flex;
-  justify-content: space-between;
-  color: #7b88a6;
+.checkpoint-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 22px;
+  background: var(--mint);
+  color: #10151a;
+  border-radius: 999px;
+  padding: 14px 18px;
   font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  transition: transform 0.2s;
 }
 
-footer strong {
-  color: #20294d;
+.checkpoint-link:hover {
+  transform: translateY(-3px);
 }
 
 @media (max-width: 1000px) {
@@ -504,15 +483,6 @@ footer strong {
 @media (max-width: 650px) {
   .app-shell {
     padding: 0 4%;
-  }
-
-  .navbar {
-    min-height: 75px;
-  }
-
-  .nav-links,
-  .player-pill {
-    display: none;
   }
 
   .hero {
@@ -544,10 +514,5 @@ footer strong {
 
   .stats-grid {
     grid-template-columns: 1fr;
-  }
-
-  footer {
-    flex-direction: column;
-    gap: 8px;
   }
 }

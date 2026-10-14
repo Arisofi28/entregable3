@@ -1,5 +1,5 @@
-
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import {
   Gamepad2,
   Search,
@@ -9,67 +9,28 @@ import {
   ChevronRight,
   Sparkles
 } from "lucide-react";
+import {
+  formatHours,
+  formatProgress,
+  gameSummary,
+  librarySummary
+} from "../data/library";
+import SiteHeader, { SiteFooter } from "../components/SiteHeader";
+import { useLibrary } from "../state/useLibrary";
 import "./HomePage.css";
 
-const demoGames = [
-  {
-    id: "1",
-    name: "Pixel Adventure",
-    genre: "Aventura",
-    platform: "PC",
-    progress: 67,
-    icon: "🚀",
-    color: "#5278F4"
-  },
-  {
-    id: "2",
-    name: "Forest Quest",
-    genre: "Estrategia",
-    platform: "Switch",
-    progress: 42,
-    icon: "🌳",
-    color: "#50B76D"
-  },
-  {
-    id: "3",
-    name: "Cosmic Battle",
-    genre: "Acción",
-    platform: "PlayStation",
-    progress: 85,
-    icon: "👾",
-    color: "#F5685C"
-  }
-];
-
 export default function HomePage() {
+  const { games } = useLibrary();
   const [search, setSearch] = useState("");
+  const snapshot = librarySummary(games);
 
-  const filteredGames = demoGames.filter(game =>
+  const filteredGames = games.filter(game =>
     game.name.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
     <div className="app-shell">
-      <header className="navbar">
-        <div className="brand">
-          <span className="brand-icon">
-            <Gamepad2 size={27} />
-          </span>
-          <span>
-            ARCADE<span className="brand-accent">.</span>
-          </span>
-        </div>
-
-        <nav className="nav-links">
-          <a href="#games">My Games</a>
-          <a href="#checkpoint">Checkpoint</a>
-        </nav>
-
-        <div className="player-pill">
-          <span>PLAYER 01</span>
-          <span>⭐</span>
-        </div>
-      </header>
+      <SiteHeader />
 
       <main>
         <section className="hero">
@@ -126,52 +87,62 @@ export default function HomePage() {
                   setSearch(event.target.value)
                 }
                 placeholder="Buscar videojuegos..."
+                aria-label="Buscar videojuegos"
               />
             </div>
           </div>
 
           <div className="game-grid">
-            {filteredGames.map(game => (
-              <article
-                className="game-card"
-                key={game.id}
-              >
-                <div
-                  className="game-art"
-                  style={{ background: game.color }}
+            {filteredGames.map(game => {
+              const progress = gameSummary(game).porcentajeAvanceActual;
+
+              return (
+                <article
+                  className="game-card"
+                  key={game.id}
                 >
-                  <span className="platform-tag">
-                    {game.platform}
-                  </span>
+                  <div
+                    className="game-art"
+                    style={{ background: game.color }}
+                  >
+                    <span className="platform-tag">
+                      {game.platform}
+                    </span>
 
-                  <span className="game-character">
-                    {game.icon}
-                  </span>
-                </div>
-
-                <div className="game-information">
-                  <span className="game-genre">
-                    {game.genre}
-                  </span>
-
-                  <h3>{game.name}</h3>
-
-                  <div className="progress-label">
-                    <span>Progress</span>
-                    <strong>{game.progress}%</strong>
+                    <span className="game-character">
+                      {game.icon}
+                    </span>
                   </div>
 
-                  <div className="progress-track">
-                    <div
-                      className="progress-fill"
-                      style={{
-                        width: `${game.progress}%`
-                      }}
-                    />
+                  <div className="game-information">
+                    <div className="game-meta">
+                      <span className="game-genre">
+                        {game.genre}
+                      </span>
+                      <span className="game-status">
+                        {game.status}
+                      </span>
+                    </div>
+
+                    <h3>{game.name}</h3>
+
+                    <div className="progress-label">
+                      <span>Progress</span>
+                      <strong>{formatProgress(progress)}</strong>
+                    </div>
+
+                    <div className="progress-track">
+                      <div
+                        className="progress-fill"
+                        style={{
+                          width: `${Math.max(0, Math.min(100, progress))}%`
+                        }}
+                      />
+                    </div>
                   </div>
-                </div>
-              </article>
-            ))}
+                </article>
+              );
+            })}
 
             <article className="add-game-card">
               <div className="add-icon">
@@ -179,12 +150,12 @@ export default function HomePage() {
               </div>
 
               <h3>New Adventure?</h3>
-              <p>Agrega tu próximo videojuego.</p>
-              <span>COMING SOON</span>
+              <p>Agrégalo desde la terminal.</p>
+              <Link to="/terminal">OPEN TERMINAL</Link>
             </article>
           </div>
 
-          {filteredGames.length === 0 && (
+          {search.trim() && filteredGames.length === 0 && (
             <p className="empty-search">
               No encontramos videojuegos con ese nombre.
             </p>
@@ -211,38 +182,43 @@ export default function HomePage() {
               <Clock3 />
               <span>TOTAL PLAYTIME</span>
               <strong>
-                14.5 <small>HRS</small>
+                {formatHours(snapshot.horasTotales)} <small>HRS</small>
               </strong>
+              <em>En toda la biblioteca</em>
             </div>
 
             <div className="stat">
               <Gamepad2 />
               <span>GAME SESSIONS</span>
-              <strong>08</strong>
+              <strong>
+                {String(snapshot.totalPartidas).padStart(2, "0")}
+              </strong>
+              <em>Registradas</em>
             </div>
 
             <div className="stat">
               <Trophy />
               <span>CURRENT PROGRESS</span>
               <strong>
-                67 <small>%</small>
+                {snapshot.porcentajeAvanceActual} <small>%</small>
               </strong>
+              <em>{snapshot.juegoActual ?? "Sin partidas"}</em>
             </div>
           </div>
 
           <p className="checkpoint-note">
-            Datos de demostración. Próximamente conectados
-            a nuestra API.
+            El resumen sale de las partidas guardadas.
+            La terminal escribe en esta misma colección.
           </p>
+
+          <Link className="checkpoint-link" to="/terminal">
+            OPEN TERMINAL
+            <ChevronRight size={18} />
+          </Link>
         </section>
       </main>
 
-      <footer>
-        <strong>ARCADE UNIVERSE</strong>
-        <span>
-          Entregable 3 · Diario de Progreso Gamer
-        </span>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }
