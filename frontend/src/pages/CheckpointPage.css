@@ -1,0 +1,119 @@
+.checkpoint-back-row { display: flex; align-items: center; justify-content: space-between; gap: 15px; margin: -16px 0 15px; }
+.checkpoint-back-link,
+.checkpoint-edit-link { display: inline-flex; align-items: center; gap: 7px; color: #78869a; font-size: 10px; font-weight: 800; letter-spacing: 0.09em; }
+.checkpoint-back-link:hover,
+.checkpoint-edit-link:hover { color: var(--blue); }
+.checkpoint-hero { position: relative; display: grid; min-height: 300px; grid-template-columns: 0.8fr 1.25fr 0.8fr; align-items: center; gap: 22px; padding: 30px 38px; overflow: hidden; border: 1px solid rgba(32, 49, 77, 0.06); border-radius: 27px; background: #d8f0fb; box-shadow: var(--shadow); }
+.checkpoint-hero::after { position: absolute; right: -7%; bottom: -77%; width: 60%; height: 125%; border-radius: 50%; background: rgba(168, 217, 140, 0.64); content: ""; }
+.checkpoint-hero-art { position: relative; z-index: 1; display: grid; min-height: 220px; place-items: center; }
+.checkpoint-art-circle { position: absolute; width: 195px; aspect-ratio: 1; border: 2px solid rgba(255, 255, 255, 0.65); border-radius: 50%; background: rgba(255, 255, 255, 0.42); }
+.checkpoint-game-emoji { position: relative; font-size: 103px; filter: drop-shadow(8px 12px 6px rgba(32, 49, 77, 0.17)); }
+.checkpoint-art-star { position: absolute; color: white; font-size: 32px; }
+.star-a { top: 22px; left: 15px; }.star-b { right: 15px; bottom: 25px; font-size: 24px; }
+.checkpoint-title-area { position: relative; z-index: 1; }
+.checkpoint-platform { display: inline-flex; align-items: center; gap: 9px; color: #59778a; font-size: 11px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+.checkpoint-platform span { color: #91aab8; }
+.checkpoint-title-area h1 { margin: 10px 0; overflow-wrap: anywhere; color: var(--navy); font-size: clamp(30px, 4.3vw, 48px); letter-spacing: -0.065em; line-height: 1.05; }
+.checkpoint-status { display: inline-flex; padding: 7px 11px; border-radius: 20px; background: #edf6e9; color: #558d48; font-size: 10px; font-weight: 800; text-transform: capitalize; }
+.checkpoint-status.status-pausado { background: #fff4d8; color: #a57a21; }.checkpoint-status.status-completado { background: #e9efff; color: #536fca; }.checkpoint-status.status-abandonado { background: #f3ebef; color: #956a7f; }
+.checkpoint-title-area p { margin: 11px 0 16px; color: #627b8d; font-size: 12px; }
+.checkpoint-session-button { min-height: 43px; padding: 0 14px; font-size: 10px; }
+.checkpoint-progress { position: relative; z-index: 1; display: grid; justify-items: center; }
+.checkpoint-progress svg { width: 175px; height: 175px; overflow: visible; transform: rotate(-90deg); }
+.checkpoint-ring-track,
+.checkpoint-ring-value { fill: none; stroke-width: 13; }
+.checkpoint-ring-track { stroke: rgba(255, 255, 255, 0.75); }
+.checkpoint-ring-value { stroke: #76bd79; stroke-linecap: round; transition: stroke-dashoffset 650ms ease; }
+.checkpoint-progress-label { position: absolute; top: 51px; display: grid; justify-items: center; }
+.checkpoint-progress-label strong { color: var(--navy); font: 700 43px 'Space Grotesk', sans-serif; letter-spacing: -0.06em; }
+.checkpoint-progress-label span { color: #708499; font-size: 9px; font-weight: 800; letter-spacing: 0.12em; }
+.checkpoint-progress-caption { margin-top: -7px; color: #527b51; font-size: 11px; font-weight: 800; }
+
+.checkpoint-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 13px; margin: 17px 0 22px; }
+.checkpoint-stat { display: flex; min-width: 0; min-height: 101px; align-items: center; gap: 12px; padding: 15px; border: 1px solid rgba(32, 49, 77, 0.06); border-radius: 19px; background: var(--cream); box-shadow: 0 7px 18px rgba(43, 72, 119, 0.06); }
+.checkpoint-stat-icon { display: grid; width: 43px; height: 43px; flex: 0 0 auto; place-items: center; border-radius: 14px; }
+.checkpoint-stat > div { min-width: 0; display: grid; gap: 6px; }
+.checkpoint-stat small { color: #8792a2; font-size: 8px; font-weight: 800; letter-spacing: 0.1em; }
+.checkpoint-stat strong { overflow: hidden; color: var(--navy); font: 700 20px 'Space Grotesk', sans-serif; letter-spacing: -0.04em; text-overflow: ellipsis; white-space: nowrap; }
+.checkpoint-stat strong span { color: #8a95a5; font: 600 10px 'DM Sans', sans-serif; letter-spacing: 0; }
+.stat-latest strong { white-space: normal; }
+.stat-latest strong span { display: block; margin-top: 2px; }
+.stat-hours .checkpoint-stat-icon { background: #fff0e8; color: #d9854d; }
+.stat-sessions .checkpoint-stat-icon { background: #e9eeff; color: var(--blue); }
+.stat-achievements .checkpoint-stat-icon { background: #fff4d5; color: #b88925; }
+.stat-latest .checkpoint-stat-icon { background: #ebf5e7; color: #619651; }
+
+.checkpoint-content-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; gap: 18px; }
+.achievement-panel,
+.checkpoint-history { min-width: 0; padding: 23px; }
+.checkpoint-section-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin-bottom: 17px; }
+.checkpoint-section-heading .page-kicker { margin-bottom: 6px; font-size: 9px; }
+.checkpoint-section-heading h2 { margin: 0; font-size: 22px; letter-spacing: -0.05em; }
+.achievement-total { color: #8a95a5; font-size: 10px; font-weight: 700; white-space: nowrap; }
+.checkpoint-achievements { display: grid; gap: 9px; }
+.checkpoint-achievement { display: flex; min-width: 0; align-items: center; gap: 11px; padding: 12px; border: 1px solid #edf0f3; border-radius: 15px; background: white; cursor: pointer; }
+.checkpoint-achievement.earned { border-color: #dcebd7; background: #f6fbf3; }
+.checkpoint-achievement > input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.checkpoint-achievement:focus-within { outline: 3px solid rgba(82, 120, 244, 0.35); outline-offset: 2px; }
+.achievement-medal { display: grid; width: 39px; height: 39px; flex: 0 0 auto; place-items: center; border-radius: 13px; background: #fff3d5; color: #c29639; }
+.medal-1 { background: #e9efff; color: #607fd2; }.medal-2 { background: #ffece9; color: #d87868; }.medal-3 { background: #eaf5e6; color: #69a45a; }
+.checkpoint-achievement:not(.earned) .achievement-medal { filter: grayscale(0.7); opacity: 0.7; }
+.achievement-copy { display: grid; min-width: 0; flex: 1; gap: 3px; }
+.achievement-copy strong { overflow: hidden; color: var(--navy); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.achievement-copy small { color: #909aaa; font-size: 10px; }
+.achievement-check { display: grid; width: 25px; height: 25px; flex: 0 0 auto; place-items: center; border: 1px solid #e0e5eb; border-radius: 9px; color: white; }
+.earned .achievement-check { border-color: #83c987; background: #83c987; }
+.achievement-no-items,
+.checkpoint-history-empty { display: grid; min-height: 160px; align-content: center; justify-items: center; gap: 8px; color: #8995a5; text-align: center; }
+.achievement-no-items > svg,
+.checkpoint-history-empty > svg { color: var(--blue); }
+.achievement-no-items p,
+.checkpoint-history-empty p { max-width: 280px; margin: 0; font-size: 11px; line-height: 1.5; }
+.achievement-no-items a,
+.checkpoint-history-empty a,
+.history-all-link { display: inline-flex; align-items: center; gap: 5px; color: var(--blue); font-size: 9px; font-weight: 800; letter-spacing: 0.04em; }
+.checkpoint-session-list { display: grid; }
+.checkpoint-session { display: flex; min-width: 0; align-items: center; gap: 11px; padding: 12px 0; border-top: 1px solid #edf0f4; }
+.checkpoint-session-icon { display: grid; width: 37px; height: 37px; flex: 0 0 auto; place-items: center; border-radius: 13px; background: #edf2ff; color: var(--blue); }
+.checkpoint-session-main { display: grid; min-width: 0; flex: 1; gap: 4px; }
+.checkpoint-session-main strong { color: var(--navy); font-size: 11px; }
+.checkpoint-session-main span { overflow: hidden; color: #8792a2; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+.session-progress-pill { padding: 7px 9px; border-radius: 20px; background: #edf6e9; color: #56894d; font-size: 10px; font-weight: 800; white-space: nowrap; }
+.checkpoint-state { width: min(100%, 650px); margin: 0 auto; }
+.checkpoint-state .button { margin-top: 17px; }
+.checkpoint-state .checkpoint-back-link { margin-top: 14px; }
+.checkpoint-spin { animation: checkpoint-spin 1s linear infinite; }
+@keyframes checkpoint-spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 980px) {
+  .checkpoint-hero { grid-template-columns: 0.8fr 1.2fr; }
+  .checkpoint-progress { grid-column: 1 / -1; grid-row: 2; display: flex; align-items: center; justify-content: flex-start; gap: 18px; }
+  .checkpoint-progress svg { width: 100px; height: 100px; }
+  .checkpoint-progress-label { top: 25px; left: 20px; }
+  .checkpoint-progress-label strong { font-size: 26px; }
+  .checkpoint-progress-caption { margin: 0; }
+  .checkpoint-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 700px) {
+  .checkpoint-hero { grid-template-columns: 1fr; gap: 0; padding: 24px; }
+  .checkpoint-hero-art { min-height: 165px; }
+  .checkpoint-art-circle { width: 145px; }
+  .checkpoint-game-emoji { font-size: 77px; }
+  .checkpoint-title-area { text-align: center; }
+  .checkpoint-platform { justify-content: center; }
+  .checkpoint-progress { justify-content: center; margin-top: 18px; }
+  .checkpoint-progress-label { left: calc(50% - 123px); }
+  .checkpoint-progress-caption { margin-left: 10px; }
+  .checkpoint-content-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 500px) {
+  .checkpoint-back-row { margin-top: -5px; }
+  .checkpoint-stats { gap: 9px; }
+  .checkpoint-stat { min-height: 86px; gap: 8px; padding: 11px 9px; }
+  .checkpoint-stat-icon { width: 36px; height: 36px; }
+  .checkpoint-stat strong { font-size: 17px; }
+  .checkpoint-stat small { font-size: 7px; }
+  .achievement-panel,
+  .checkpoint-history { padding: 17px; }
+  .checkpoint-section-heading { align-items: flex-start; flex-direction: column; }
+}

@@ -1,0 +1,72 @@
+.sessions-layout { display: grid; grid-template-columns: minmax(300px, 0.84fr) minmax(0, 1.3fr); align-items: start; gap: 22px; }
+.session-form-card { overflow: hidden; border: 1px solid rgba(32, 49, 77, 0.07); border-radius: 25px; background: var(--cream); box-shadow: var(--shadow); }
+.session-form-banner { position: relative; min-height: 168px; padding: 24px 25px; overflow: hidden; background: #d9f0fb; }
+.session-form-banner::after { position: absolute; right: -22px; bottom: -70px; width: 205px; height: 130px; border-radius: 50%; background: rgba(168, 217, 140, 0.77); content: ""; transform: rotate(-13deg); }
+.session-form-badge { display: inline-flex; align-items: center; gap: 6px; padding: 7px 10px; border-radius: 20px; background: rgba(255, 253, 247, 0.86); color: #547383; font-size: 9px; font-weight: 800; letter-spacing: 0.1em; }
+.session-form-banner h2 { position: relative; z-index: 1; margin: 14px 0 5px; font-size: 27px; letter-spacing: -0.05em; }
+.session-form-banner p { position: relative; z-index: 1; margin: 0; color: #627b8d; font-size: 12px; }
+.session-banner-icon { position: absolute; z-index: 2; right: 35px; bottom: 23px; font-size: 63px; filter: drop-shadow(4px 8px 4px rgba(32, 49, 77, 0.14)); transform: rotate(-12deg); }
+.session-form { display: grid; gap: 16px; padding: 23px 25px 25px; }
+.session-field { display: grid; min-width: 0; gap: 8px; }
+.session-field > span { display: flex; align-items: center; gap: 7px; color: var(--navy); font-size: 11px; font-weight: 800; }
+.session-field > span svg { color: var(--blue); }
+.session-field > span small { margin-left: auto; color: #919baa; font-size: 10px; font-weight: 600; }
+.session-field input,
+.session-field select,
+.session-field textarea { width: 100%; min-width: 0; padding: 12px 13px; border: 1px solid #dfe5ed; border-radius: 12px; background: white; color: var(--navy); font-size: 12px; }
+.session-field input,
+.session-field select { min-height: 45px; }
+.session-field textarea { resize: vertical; line-height: 1.5; }
+.session-field input::placeholder,
+.session-field textarea::placeholder { color: #a3adba; }
+.session-field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.session-submit { width: 100%; margin-top: 3px; }
+.sessions-notice { display: flex; align-items: center; gap: 10px; margin: 20px 0; padding: 15px 18px; border: 1px solid; border-radius: 17px; line-height: 1.5; }
+.sessions-notice p { margin: 0; }
+.sessions-notice--error { border-color: #f2d1cb; background: #fff4f1; color: #994740; }
+.sessions-notice--success { border-color: #c5e5bd; background: #eff8eb; color: #386b37; }
+.sessions-notice--success svg { flex: 0 0 auto; color: #5b9a51; }
+.session-no-games { padding: 13px; border-radius: 13px; background: #fff4d8; color: #80672c; font-size: 12px; }
+.session-no-games p { margin: 0 0 7px; }
+.session-no-games a { color: #5278f4; font-size: 10px; font-weight: 800; }
+.session-history { min-width: 0; }
+.session-history-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 15px; margin: 3px 0 19px; }
+.session-history-heading .page-kicker { margin-bottom: 7px; }
+.session-history-heading h2 { margin: 0; font-size: 24px; letter-spacing: -0.05em; }
+.session-count { padding: 7px 9px; border-radius: 20px; background: #fff1cf; color: #9b7526; font-size: 9px; font-weight: 800; letter-spacing: 0.08em; white-space: nowrap; }
+.session-timeline { position: relative; display: grid; gap: 12px; }
+.session-timeline::before { position: absolute; top: 19px; bottom: 25px; left: 21px; width: 2px; background: #dce4f2; content: ""; }
+.memory-card { position: relative; display: flex; gap: 14px; padding: 17px 17px 17px 0; }
+.memory-marker { position: relative; z-index: 1; display: grid; width: 44px; height: 44px; flex: 0 0 auto; place-items: center; border: 4px solid #f4f8fb; border-radius: 15px; background: #e6edff; color: var(--blue); }
+.memory-color-1 { background: #ffedeb; color: var(--coral); }
+.memory-color-2 { background: #e9f5e4; color: #5a9e50; }
+.memory-color-3 { background: #fff3d7; color: #b78a2c; }
+.memory-card-main { min-width: 0; flex: 1; padding: 17px 18px; border: 1px solid rgba(32, 49, 77, 0.06); border-radius: 18px; background: var(--cream); box-shadow: 0 8px 18px rgba(43, 72, 119, 0.06); }
+.memory-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.memory-date { display: block; margin-bottom: 5px; color: #8994a5; font-size: 10px; font-weight: 700; }
+.memory-game-title { display: block; overflow: hidden; margin: 0; color: var(--navy); font: 700 17px 'Space Grotesk', sans-serif; letter-spacing: -0.04em; text-overflow: ellipsis; white-space: nowrap; }
+a.memory-game-title:hover { color: var(--blue); }
+.memory-delete { display: grid; width: 33px; height: 33px; flex: 0 0 auto; place-items: center; border: 0; border-radius: 11px; background: #fff0ee; color: #c86259; }
+.memory-delete:hover { background: #ffe2dd; }
+.memory-delete:disabled { opacity: 0.5; cursor: not-allowed; }
+.memory-stats { display: flex; flex-wrap: wrap; gap: 15px; margin: 13px 0 10px; color: #718097; font-size: 10px; font-weight: 700; }
+.memory-stats span { display: inline-flex; align-items: center; gap: 5px; }
+.memory-stats span:first-child svg { color: #ed9b5b; }
+.memory-stats span:last-child svg { color: #7d9ce9; }
+.memory-progress .progress-track { height: 7px; }
+.memory-notes { margin: 12px 0 0; color: #75839a; font-size: 11px; font-style: italic; line-height: 1.6; }
+.session-state { min-height: 280px; }
+.session-spin { animation: session-spin 1s linear infinite; }
+@keyframes session-spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 900px) { .sessions-layout { grid-template-columns: 1fr; } }
+@media (max-width: 560px) {
+  .session-form { padding: 20px; }
+  .session-form-banner { padding: 21px; }
+  .session-field-row { grid-template-columns: 1fr; }
+  .session-history-heading { align-items: flex-start; flex-direction: column; }
+  .memory-card { gap: 8px; padding-right: 0; }
+  .memory-marker { width: 38px; height: 38px; border-radius: 13px; }
+  .memory-timeline::before { left: 18px; }
+  .memory-card-main { padding: 14px; }
+}

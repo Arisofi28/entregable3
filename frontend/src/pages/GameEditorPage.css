@@ -1,0 +1,59 @@
+.editor-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.85fr);
+  align-items: start;
+  gap: 20px;
+}
+
+.editor-form,
+.achievement-editor { padding: 28px; }
+
+.form-section-heading { display: flex; align-items: center; gap: 13px; margin-bottom: 26px; }
+.editor-heading-icon { display: grid; width: 48px; height: 48px; flex: 0 0 auto; place-items: center; border-radius: 16px; background: #e8edff; color: var(--blue); }
+.achievement-icon { background: #fff3d5; color: #bd8b2c; }
+.form-section-heading h2 { margin: 0 0 4px; font-size: 21px; letter-spacing: -0.04em; }
+.form-section-heading p { margin: 0; color: var(--muted); font-size: 12px; }
+.field-label,
+.form-fieldset legend { display: block; margin-bottom: 9px; color: var(--navy); font-size: 12px; font-weight: 800; }
+.field-label span { margin-left: 5px; color: #9aa4b2; font-size: 10px; font-weight: 600; }
+.form-control { width: 100%; min-height: 49px; padding: 0 14px; border: 1px solid #dfe5ed; border-radius: 13px; background: white; color: var(--navy); }
+.form-control::placeholder { color: #a3adba; }
+.form-fieldset { min-width: 0; margin: 24px 0; padding: 0; border: 0; }
+.form-fieldset legend { padding: 0; }
+.platform-options { display: flex; flex-wrap: wrap; gap: 8px; }
+.choice-pill { position: relative; padding: 10px 13px; border: 1px solid #e3e8ef; border-radius: 12px; background: white; color: #68768d; font-size: 11px; font-weight: 700; cursor: pointer; }
+.choice-pill input,
+.genre-choice input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.choice-pill.selected { border-color: #9eaff8; background: #eff2ff; color: #4868db; box-shadow: inset 0 0 0 1px #9eaff8; }
+.choice-pill:focus-within,
+.genre-choice:focus-within { outline: 3px solid rgba(82, 120, 244, 0.35); outline-offset: 2px; }
+.genre-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; }
+.genre-choice { position: relative; display: grid; min-height: 86px; place-items: center; align-content: center; gap: 6px; border: 1px solid #e4e9f0; border-radius: 15px; background: white; color: #65738a; cursor: pointer; }
+.genre-choice span { font-size: 22px; }
+.genre-choice strong { font-size: 10px; }
+.genre-choice.selected { border-color: #9eaff8; background: #eff2ff; color: #4868db; box-shadow: inset 0 0 0 1px #9eaff8; }
+.form-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 30px; padding-top: 22px; border-top: 1px solid #edf0f4; }
+.achievement-list { display: grid; gap: 10px; }
+.achievement-row { display: flex; align-items: center; gap: 9px; }
+.achievement-name { min-width: 0; min-height: 45px; }
+.achievement-earned { position: relative; display: grid; width: 38px; height: 38px; flex: 0 0 auto; place-items: center; border: 1px solid #e4e8ed; border-radius: 12px; background: white; color: white; cursor: pointer; }
+.achievement-earned input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+.achievement-earned span { display: grid; width: 23px; height: 23px; place-items: center; border-radius: 8px; background: #edf0f4; color: transparent; }
+.achievement-earned input:checked + span { background: #83c987; color: white; }
+.achievement-earned input:focus-visible + span { outline: 3px solid rgba(82, 120, 244, 0.42); outline-offset: 2px; }
+.remove-achievement { display: grid; width: 38px; height: 38px; flex: 0 0 auto; place-items: center; border: 0; border-radius: 12px; background: #fff0ee; color: #cb6157; }
+.remove-achievement:hover { background: #ffe2dd; }
+.achievement-empty { padding: 19px; border: 1px dashed #d9e0e9; border-radius: 15px; color: var(--muted); font-size: 12px; line-height: 1.55; text-align: center; }
+.add-achievement { width: 100%; margin-top: 13px; }
+.achievement-hint { margin: 13px 0 0; color: #8b96a7; font-size: 10px; line-height: 1.5; }
+.editor-spinner { width: 15px; height: 15px; border: 2px solid rgba(255, 255, 255, 0.5); border-top-color: white; border-radius: 50%; animation: editor-spin 0.7s linear infinite; }
+@keyframes editor-spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 850px) { .editor-layout { grid-template-columns: 1fr; } }
+@media (max-width: 580px) {
+  .editor-form,
+  .achievement-editor { padding: 20px; }
+  .genre-options { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .form-actions { justify-content: stretch; }
+  .form-actions .button { flex: 1; }
+}

@@ -1,6 +1,6 @@
 
 import mongoose from "mongoose";
-import { VideojuegoModel } from "../models/videojuego.js";
+import { VideojuegoModel } from "../models/Videojuego.js";
 import { AppError } from "../middlewares/AppError.js";
 
 // VALIDAR OBJECTID
