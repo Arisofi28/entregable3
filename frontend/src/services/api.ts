@@ -1,8 +1,14 @@
 
-const API_URL = (
+const API_BASE_URL = (
   import.meta.env.VITE_API_URL ??
-  "http://localhost:3000/api"
-).replace(/\/$/, "");
+  (import.meta.env.MODE === "production"
+    ? "https://entregable3-backend-nnt0.onrender.com/api"
+    : "http://localhost:3000/api")
+).replace(/\/+$/, "");
+
+const API_URL = API_BASE_URL.endsWith("/api")
+  ? API_BASE_URL
+  : `${API_BASE_URL}/api`;
 
 export class ApiError extends Error {
   status: number;
@@ -38,7 +44,7 @@ export async function apiRequest<T>(
     );
   } catch {
     throw new ApiError(
-      "No se pudo conectar con el servidor. Verifica que el backend esté encendido.",
+      "No se pudo conectar con el servidor. Verifica la URL de la API y la configuración CORS.",
       0
     );
   }

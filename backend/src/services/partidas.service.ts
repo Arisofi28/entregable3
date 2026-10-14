@@ -55,6 +55,18 @@ export async function crearPartida(datos: unknown) {
     );
   }
 
+  if (
+    typeof entrada.porcentajeAvance !== "number" ||
+    !Number.isFinite(entrada.porcentajeAvance) ||
+    entrada.porcentajeAvance < 0 ||
+    entrada.porcentajeAvance > 100
+  ) {
+    throw new AppError(
+      400,
+      "El avance ganado en la sesión debe estar entre 0 y 100%"
+    );
+  }
+
   if (typeof entrada.videojuego !== "string") {
     throw new AppError(
       400,
@@ -156,7 +168,13 @@ export async function resumenVideojuego(id: string) {
     totalPartidas,
     horasTotales,
     ultimaPartida: ultimaPartida?.fecha ?? null,
-    porcentajeAvanceActual:
-      ultimaPartida?.porcentajeAvance ?? 0
+    porcentajeAvanceActual: Math.min(
+      100,
+      partidas.reduce(
+        (acumulado, partida) =>
+          acumulado + partida.porcentajeAvance,
+        0
+      )
+    )
   };
 }

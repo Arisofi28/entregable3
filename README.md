@@ -93,8 +93,8 @@ horasTotales = suma(duracionMinutos) / 60
 
 ultimaPartida = fecha de la sesión más reciente
 
-porcentajeAvanceActual = porcentaje de avance
-de la sesión más reciente.
+porcentajeAvanceActual = suma del avance ganado en
+todas las sesiones del videojuego, limitada a 100%.
 
 Si dos partidas tienen la misma fecha se aplicará
 un criterio determinista de desempate.
@@ -107,6 +107,11 @@ Si no existen partidas:
 - porcentajeAvanceActual: 0
 
 El cálculo se realizará en la capa de servicio.
+
+Cada `Partida.porcentajeAvance` representa el avance ganado durante esa
+sesión. Los registros existentes no se modifican automáticamente: si se
+guardaron como porcentajes absolutos, deben revisarse y recrearse o migrarse
+manualmente a incrementos por sesión antes de usarlos con esta semántica.
 
 ## Arquitectura
 
@@ -154,3 +159,10 @@ Backend:
 Frontend:
 - VITE_API_URL
 
+En producción, el backend permite solicitudes desde
+`https://entregable3-frontend.onrender.com`. Para permitir otros dominios,
+configura `CLIENT_URL` en el backend con uno o varios orígenes separados
+por comas. El frontend usa `https://entregable3-backend-nnt0.onrender.com/api`
+como URL de API en producción; puedes sobrescribirla con `VITE_API_URL`.
+Si `VITE_API_URL` contiene solo el dominio del backend, el frontend agrega
+automáticamente el prefijo `/api`.

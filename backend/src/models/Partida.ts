@@ -34,9 +34,9 @@ const partidaSchema = new Schema<IPartida>(
 
     porcentajeAvance: {
       type: Number,
-      required: [true, "El porcentaje es obligatorio"],
-      min: [0, "El avance mínimo es 0%"],
-      max: [100, "El avance máximo es 100%"]
+      required: [true, "El avance ganado en la sesión es obligatorio"],
+      min: [0, "El avance ganado mínimo es 0%"],
+      max: [100, "El avance ganado máximo es 100%"]
     },
 
     notas: {

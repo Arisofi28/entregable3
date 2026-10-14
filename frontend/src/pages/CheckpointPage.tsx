@@ -175,7 +175,7 @@ export default function CheckpointPage() {
                       <strong>{sessionDate.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}</strong>
                       <span>{session.duracionMinutos} min played {session.notas ? `· ${session.notas}` : ""}</span>
                     </div>
-                    <span className="session-progress-pill">{session.porcentajeAvance}%</span>
+                    <span className="session-progress-pill" title="Progress gained this session">+{session.porcentajeAvance}%</span>
                   </article>
                 );
               })}

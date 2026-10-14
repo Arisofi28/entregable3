@@ -18,9 +18,14 @@ import type { Videojuego } from "../services/videojuegosApi";
 import {
   crearPartida,
   eliminarPartida,
-  obtenerPartidas
+  obtenerPartidas,
+  obtenerResumenVideojuego
 } from "../services/partidasApi";
-import type { CrearPartida, Partida } from "../services/partidasApi";
+import type {
+  CrearPartida,
+  Partida,
+  ResumenVideojuego
+} from "../services/partidasApi";
 import "./SessionsPage.css";
 
 function localDateTimeValue(date: Date): string {
@@ -38,6 +43,7 @@ function gameIdForSession(session: Partida): string {
 export default function SessionsPage() {
   const [games, setGames] = useState<Videojuego[]>([]);
   const [sessions, setSessions] = useState<Partida[]>([]);
+  const [summaries, setSummaries] = useState<Record<string, ResumenVideojuego>>({});
   const [gameId, setGameId] = useState("");
   const [date, setDate] = useState(() => localDateTimeValue(new Date()));
   const [duration, setDuration] = useState("60");
@@ -48,6 +54,7 @@ export default function SessionsPage() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [summaryWarning, setSummaryWarning] = useState("");
 
   async function loadData() {
     try {
@@ -58,6 +65,24 @@ export default function SessionsPage() {
       setGames(gameData);
       setSessions(sessionData);
       setGameId(current => current || gameData[0]?._id || "");
+      const summaryResults = await Promise.allSettled(
+        gameData.map(game => obtenerResumenVideojuego(game._id))
+      );
+      const nextSummaries: Record<string, ResumenVideojuego> = {};
+      let failedSummaries = 0;
+      summaryResults.forEach((result, index) => {
+        if (result.status === "fulfilled") {
+          nextSummaries[gameData[index]._id] = result.value;
+        } else {
+          failedSummaries += 1;
+        }
+      });
+      setSummaries(nextSummaries);
+      setSummaryWarning(
+        failedSummaries
+          ? "Some game progress summaries are unavailable right now."
+          : ""
+      );
     } catch (loadError) {
       setError(loadError instanceof Error ? loadError.message : "Could not load your session journal.");
     } finally {
@@ -109,7 +134,7 @@ export default function SessionsPage() {
     setSuccess("");
     try {
       await eliminarPartida(session._id);
-      setSessions(current => current.filter(item => item._id !== session._id));
+      await loadData();
       setSuccess("Session removed from your journal.");
     } catch (deleteError) {
       setError(deleteError instanceof Error ? deleteError.message : "Could not delete this session.");
@@ -119,6 +144,7 @@ export default function SessionsPage() {
   }
 
   const gameNames = new Map(games.map(game => [game._id, game.nombre]));
+  const selectedGameSummary = summaries[gameId];
 
   return (
     <main className="sessions-page page-container">
@@ -138,6 +164,7 @@ export default function SessionsPage() {
           <p>{success}</p>
         </div>
       )}
+      {summaryWarning && <div className="notice info" role="status">{summaryWarning}</div>}
 
       <div className="sessions-layout">
         <section className="session-form-card">
@@ -171,10 +198,17 @@ export default function SessionsPage() {
                 <input type="number" required min="1" step="1" value={duration} onChange={event => setDuration(event.target.value)} />
               </label>
               <label className="session-field">
-                <span><Sparkles size={15} /> Progress (%)</span>
+                <span><Sparkles size={15} /> Progress gained this session (%)</span>
                 <input type="number" required min="0" max="100" step="any" value={progress} onChange={event => setProgress(event.target.value)} />
               </label>
             </div>
+            {gameId && (
+              <p role="status">
+                Current game progress: {selectedGameSummary
+                  ? `${selectedGameSummary.porcentajeAvanceActual}%`
+                  : "unavailable"}
+              </p>
+            )}
             <label className="session-field">
               <span>Notes <small>Optional</small></span>
               <textarea maxLength={500} rows={4} value={notes} onChange={event => setNotes(event.target.value)} placeholder="What happened on this adventure?" />
@@ -216,10 +250,10 @@ export default function SessionsPage() {
                       </div>
                       <div className="memory-stats">
                         <span><Clock3 size={14} /> {session.duracionMinutos} min</span>
-                        <span><Sparkles size={14} /> {session.porcentajeAvance}% progress</span>
+                        <span><Sparkles size={14} /> +{session.porcentajeAvance}% gained this session</span>
                       </div>
                       <div className="memory-progress">
-                        <div className="progress-track" role="progressbar" aria-label={`${title} session progress`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.max(0, Math.min(100, session.porcentajeAvance))}>
+                        <div className="progress-track" role="progressbar" aria-label={`${title} progress gained this session`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.max(0, Math.min(100, session.porcentajeAvance))}>
                           <div className="progress-fill" style={{ width: `${Math.max(0, Math.min(100, session.porcentajeAvance))}%` }} />
                         </div>
                       </div>

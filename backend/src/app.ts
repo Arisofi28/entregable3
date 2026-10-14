@@ -28,7 +28,8 @@ const allowedOrigins = [
   "http://localhost:5175",
   "http://127.0.0.1:5173",
   "http://127.0.0.1:5174",
-  env.CLIENT_URL
+  "https://entregable3-frontend.onrender.com",
+  ...env.CLIENT_URL.split(",").map((origin) => origin.trim())
 ].filter(
   (origin): origin is string => Boolean(origin)
 );
