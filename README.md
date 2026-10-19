@@ -156,13 +156,12 @@ Backend:
 - CLIENT_URL
 - NODE_ENV
 
-Frontend:
-- VITE_API_URL
 
-En producción, el backend permite solicitudes desde
-`https://entregable3-frontend.onrender.com`. Para permitir otros dominios,
-configura `CLIENT_URL` en el backend con uno o varios orígenes separados
-por comas. El frontend usa `https://entregable3-backend-nnt0.onrender.com/api`
-como URL de API en producción; puedes sobrescribirla con `VITE_API_URL`.
-Si `VITE_API_URL` contiene solo el dominio del backend, el frontend agrega
-automáticamente el prefijo `/api`.
+
+Despliege Front: https://entregable3-frontend.onrender.com/
+
+Despliege Back: https://entregable3-1v2.onrender.com
+
+GitHub https://github.com/Arisofi28/entregable3
+
+Video Youtube. Prueba. https://youtu.be/b7lNVFGCRm8
