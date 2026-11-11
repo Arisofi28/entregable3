@@ -2,6 +2,7 @@
 import { Router } from "express";
 
 import * as controller from "../controllers/videojuegos.controller.js";
+import { listarPorVideojuego as listarMetasPorVideojuego } from "../controllers/metas.controller.js";
 
 import {
   listarPorVideojuego,
@@ -38,5 +39,8 @@ router.get(
   obtenerResumen
 );
 
+
+// E2: historial de metas del videojuego (activa primero)
+router.get("/:id/metas", listarMetasPorVideojuego);
 
 export default router;
