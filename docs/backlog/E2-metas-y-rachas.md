@@ -15,7 +15,7 @@ Fuente: [`docs/prd/PRD.md`](../prd/PRD.md). Las reglas `RN-xx` son las del PRD.
 ## Historias y criterios de aceptación
 
 ### HU-01 · Fijar una meta semanal
-**Como** jugadora que registra sus partidas, **quiero** fijar para un videojuego cuántas horas y cuántos días por semana quiero jugarlo, **para** saber si estoy cumpliendo lo que me propuse.
+**Como** persona que registra sus partidas, **quiero** fijar para un videojuego cuántas horas y cuántos días por semana quiero jugarlo, **para** saber si estoy cumpliendo lo que me propuse.
 
 - **CA-01.1** DADO un videojuego en estado «jugando» o «pausado» sin meta activa, CUANDO fijo 5 horas y 4 días por semana, ENTONCES la meta queda activa y la veo en el detalle del juego.
 - **CA-01.2** DADO el formulario de meta, CUANDO indico 0 horas, más de 100 horas, 0 días, 8 días o días con decimales, ENTONCES la meta no se guarda y se me explica el límite permitido.
@@ -24,7 +24,7 @@ Fuente: [`docs/prd/PRD.md`](../prd/PRD.md). Las reglas `RN-xx` son las del PRD.
 - **CA-01.5** DADO un videojuego que no existe, CUANDO intento crearle una meta, ENTONCES se informa que el videojuego no existe.
 
 ### HU-02 · Definir hitos de avance
-**Como** jugadora, **quiero** añadir a mi meta algunos hitos de avance como «Llegar al 50 %», **para** celebrar etapas concretas del juego.
+**Como** persona que juega, **quiero** añadir a mi meta algunos hitos de avance como «Llegar al 50 %», **para** celebrar etapas concretas del juego.
 
 - **CA-02.1** DADO el formulario de meta, CUANDO agrego entre 0 y 5 hitos con descripción y porcentaje entre 1 y 100, ENTONCES se guardan con la meta.
 - **CA-02.2** DADO una meta con 5 hitos, CUANDO intento agregar un sexto, ENTONCES no se permite (RN-03).
@@ -32,7 +32,7 @@ Fuente: [`docs/prd/PRD.md`](../prd/PRD.md). Las reglas `RN-xx` son las del PRD.
 - **CA-02.4** DADO hitos ingresados en cualquier orden, CUANDO veo el progreso, ENTONCES aparecen ordenados de menor a mayor porcentaje (RN-20).
 
 ### HU-03 · Ver cómo voy esta semana
-**Como** jugadora, **quiero** ver en el detalle del juego cuántas horas y días he jugado esta semana frente a mi meta, **para** saber si voy bien antes de que termine la semana.
+**Como** persona que juega, **quiero** ver en el detalle del juego cuántas horas y días he jugado esta semana frente a mi meta, **para** saber si voy bien antes de que termine la semana.
 
 - **CA-03.1** DADO que hoy es miércoles, CUANDO veo el progreso, ENTONCES la semana mostrada va del lunes al domingo de esta semana, en hora de Ecuador (RN-04).
 - **CA-03.2** DADO partidas de 90 y 120 minutos esta semana, CUANDO veo el progreso, ENTONCES las horas de la semana son 3,5.
@@ -47,7 +47,7 @@ Fuente: [`docs/prd/PRD.md`](../prd/PRD.md). Las reglas `RN-xx` son las del PRD.
 - **CA-03.11** DADO que alcancé las horas y los días objetivo, CUANDO veo el progreso, ENTONCES se indica que la meta de la semana está cumplida (RN-15).
 
 ### HU-04 · Ver mi racha
-**Como** jugadora que tiende a abandonar juegos, **quiero** ver cuántos días seguidos llevo jugando y mi mejor racha, **para** motivarme a ser constante.
+**Como** persona que suele abandonar sus juegos, **quiero** ver cuántos días seguidos llevo jugando y mi mejor racha, **para** motivarme a ser constante.
 
 - **CA-04.1** DADO partidas hoy, ayer y anteayer, CUANDO veo la racha, ENTONCES la racha actual es 3 (RN-05).
 - **CA-04.2** DADO partidas ayer y anteayer pero no hoy, CUANDO veo la racha, ENTONCES la racha actual es 2: sigue viva (RN-07).
@@ -56,14 +56,14 @@ Fuente: [`docs/prd/PRD.md`](../prd/PRD.md). Las reglas `RN-xx` son las del PRD.
 - **CA-04.5** DADO varias partidas el mismo día, CUANDO veo la racha, ENTONCES ese día suma una sola vez (RN-08).
 
 ### HU-05 · Ver qué hitos alcancé
-**Como** jugadora, **quiero** ver qué hitos de mi meta ya alcancé, **para** sentir que avanzo.
+**Como** persona que juega, **quiero** ver qué hitos de mi meta ya alcancé, **para** sentir que avanzo.
 
 - **CA-05.1** DADO un avance actual de 50 % y hitos de 25, 50 y 100 %, CUANDO veo los hitos, ENTONCES los de 25 y 50 % aparecen alcanzados y el de 100 % no (RN-06).
 - **CA-05.2** DADO un hito alcanzado, CUANDO elimino o edito una partida y el avance actual baja por debajo de su objetivo, ENTONCES el hito deja de aparecer alcanzado (RN-12).
 - **CA-05.3** DADO un juego sin partidas, CUANDO veo los hitos, ENTONCES ninguno está alcanzado.
 
 ### HU-06 · Editar y desactivar la meta
-**Como** jugadora, **quiero** ajustar o desactivar mi meta, **para** adaptarla a mi realidad sin perder el historial.
+**Como** persona que juega, **quiero** ajustar o desactivar mi meta, **para** adaptarla a mi realidad sin perder el historial.
 
 - **CA-06.1** DADO una meta activa, CUANDO cambio sus horas, días o hitos, ENTONCES el progreso se recalcula con los nuevos valores.
 - **CA-06.2** DADO una meta activa, CUANDO elijo desactivarla, ENTONCES se me pide confirmación y, si confirmo, el juego queda sin meta activa.
@@ -72,20 +72,20 @@ Fuente: [`docs/prd/PRD.md`](../prd/PRD.md). Las reglas `RN-xx` son las del PRD.
 - **CA-06.5** DADO una meta, CUANDO intento cambiar el videojuego al que pertenece, ENTONCES se rechaza (RN-21).
 
 ### HU-07 · Coherencia entre el juego y su meta
-**Como** jugadora, **quiero** que mis metas sigan el ciclo de vida del juego, **para** no ver metas de juegos que terminé o eliminé.
+**Como** persona que juega, **quiero** que mis metas sigan el ciclo de vida del juego, **para** no ver metas de juegos que terminé o eliminé.
 
 - **CA-07.1** DADO un juego con metas, CUANDO lo elimino, ENTONCES se eliminan también todas sus metas (RN-14).
 - **CA-07.2** DADO un juego con meta activa, CUANDO lo marco como completado o abandonado, ENTONCES la meta se desactiva y queda en el historial (RN-13).
 
 ### HU-08 · Progreso al día cuando cambian mis partidas
-**Como** jugadora, **quiero** que el progreso de la semana se actualice al registrar, editar o eliminar una partida, **para** ver el efecto de inmediato.
+**Como** persona que juega, **quiero** que el progreso de la semana se actualice al registrar, editar o eliminar una partida, **para** ver el efecto de inmediato.
 
 - **CA-08.1** DADO el detalle de un juego, CUANDO registro una partida desde ahí, ENTONCES horas, días, racha e hitos se actualizan sin recargar la página.
 - **CA-08.2** DADO el detalle de un juego, CUANDO elimino una de sus partidas, ENTONCES el progreso se actualiza.
 - **CA-08.3** DADO el detalle de un juego, CUANDO edito una de sus partidas, ENTONCES el progreso se actualiza (depende de D-02).
 
 ### HU-09 · Mensajes claros cuando algo falla
-**Como** jugadora, **quiero** saber qué pasó cuando algo falla, **para** poder corregirlo.
+**Como** persona que juega, **quiero** saber qué pasó cuando algo falla, **para** poder corregirlo.
 
 - **CA-09.1** DADO un identificador de juego mal escrito, CUANDO consulto su progreso, ENTONCES se informa que el identificador no es válido.
 - **CA-09.2** DADO un juego que no existe, CUANDO consulto su progreso, ENTONCES se informa que no existe.
@@ -109,7 +109,7 @@ Fuente: [`docs/prd/PRD.md`](../prd/PRD.md). Las reglas `RN-xx` son las del PRD.
 | T-10 | feat | Sección de progreso semanal en el detalle (carga, error, vacío) | HU-03, HU-04, HU-05, CA-09.3 | T-08, T-09 | Hecho |
 | T-11 | feat | Formulario de meta con hitos y desactivación con confirmación | HU-01, HU-02, HU-06 | T-10 | Hecho |
 | T-12 | feat | Registrar y eliminar partidas desde el detalle y reconsultar el progreso | CA-08.1, CA-08.2 | T-10 | Hecho |
-| T-13 | docs | Auditoría, despliegue y pull request | todas | todos | En curso (falta despliegue y PR) |
+| T-13 | docs | Auditoría, despliegue y pull request | todas | todos | En curso (PR integrado; falta verificar Render) |
 
 ### Definition of Done específica
 

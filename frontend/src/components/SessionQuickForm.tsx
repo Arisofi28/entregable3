@@ -2,6 +2,8 @@ import { useState } from "react";
 import type { FormEvent } from "react";
 import { Save, X } from "lucide-react";
 
+import DateTimeFields from "./DateTimeFields";
+
 import "./SessionQuickForm.css";
 
 // T-12 · Formulario compacto de partida para el detalle del juego (registrar y, con D-02, editar)
@@ -21,7 +23,7 @@ interface SessionQuickFormProps {
   onCancel: () => void;
 }
 
-// Valor para <input type="datetime-local"> en la hora local del navegador
+// Valor "YYYY-MM-DDTHH:mm" en la hora local del navegador
 function toLocalInput(date: Date): string {
   return new Date(date.getTime() - date.getTimezoneOffset() * 60_000)
     .toISOString()
@@ -99,15 +101,7 @@ export default function SessionQuickForm({
         </p>
       )}
       <div className="session-quick-grid">
-        <label>
-          <span>Started at</span>
-          <input
-            type="datetime-local"
-            required
-            value={date}
-            onChange={event => setDate(event.target.value)}
-          />
-        </label>
+        <DateTimeFields value={date} onChange={setDate} dateLabel="Date" timeLabel="Started at" />
         <label>
           <span>Minutes</span>
           <input
