@@ -97,19 +97,19 @@ Fuente: [`docs/prd/PRD.md`](../prd/PRD.md). Las reglas `RN-xx` son las del PRD.
 
 | Id | Tipo | Título | Historias / criterios | Depende de | Estado |
 |---|---|---|---|---|---|
-| T-01 | test | Tests de las funciones de dominio (semana, días, horas, porcentaje, racha, hitos) | HU-03, HU-04, HU-05 | — | Pendiente |
-| T-02 | feat | Funciones puras de dominio en `src/dominio/progreso.ts` | HU-03, HU-04, HU-05 | T-01 | Pendiente |
-| T-03 | feat | Modelo `Meta` con validaciones, hitos embebidos y una activa por juego | HU-01, HU-02 | — | Pendiente |
-| T-04 | feat | CRUD de Meta: crear, obtener, listar por juego, actualizar, desactivar | HU-01, HU-02, HU-06 | T-03, T-05 | Pendiente |
-| T-05 | feat | errorHandler distingue 409 (conflicto y clave duplicada) | CA-01.3, CA-06.3 | — | Pendiente |
-| T-06 | feat | Endpoint `GET /api/videojuegos/:id/progreso-semanal` | HU-03, HU-04, HU-05, HU-09 | T-02, T-03 | Pendiente |
-| T-07 | feat | Política de juego → meta: borrado en cascada y desactivación por estado | HU-07 | T-03 | Pendiente |
-| T-08 | chore | Tokens CSS de DESIGN.md en `index.css` | — | — | Pendiente |
-| T-09 | feat | Servicio `metasApi.ts` | HU-01…HU-06 | T-04, T-06 | Pendiente |
-| T-10 | feat | Sección de progreso semanal en el detalle (carga, error, vacío) | HU-03, HU-04, HU-05, CA-09.3 | T-08, T-09 | Pendiente |
-| T-11 | feat | Formulario de meta con hitos y desactivación con confirmación | HU-01, HU-02, HU-06 | T-10 | Pendiente |
-| T-12 | feat | Registrar y eliminar partidas desde el detalle y reconsultar el progreso | CA-08.1, CA-08.2 | T-10 | Pendiente |
-| T-13 | docs | Auditoría, despliegue y pull request | todas | todos | Pendiente |
+| T-01 | test | Tests de las funciones de dominio (semana, días, horas, porcentaje, racha, hitos) | HU-03, HU-04, HU-05 | — | Hecho |
+| T-02 | feat | Funciones puras de dominio en `src/dominio/progreso.ts` | HU-03, HU-04, HU-05 | T-01 | Hecho |
+| T-03 | feat | Modelo `Meta` con validaciones, hitos embebidos y una activa por juego | HU-01, HU-02 | — | Hecho |
+| T-04 | feat | CRUD de Meta: crear, obtener, listar por juego, actualizar, desactivar | HU-01, HU-02, HU-06 | T-03, T-05 | Hecho |
+| T-05 | feat | errorHandler distingue 409 (conflicto y clave duplicada) | CA-01.3, CA-06.3 | — | Hecho |
+| T-06 | feat | Endpoint `GET /api/videojuegos/:id/progreso-semanal` | HU-03, HU-04, HU-05, HU-09 | T-02, T-03 | Hecho |
+| T-07 | feat | Política de juego → meta: borrado en cascada y desactivación por estado | HU-07 | T-03 | Hecho |
+| T-08 | chore | Tokens CSS de DESIGN.md en `index.css` | — | — | Hecho |
+| T-09 | feat | Servicio `metasApi.ts` | HU-01…HU-06 | T-04, T-06 | Hecho |
+| T-10 | feat | Sección de progreso semanal en el detalle (carga, error, vacío) | HU-03, HU-04, HU-05, CA-09.3 | T-08, T-09 | Hecho |
+| T-11 | feat | Formulario de meta con hitos y desactivación con confirmación | HU-01, HU-02, HU-06 | T-10 | Hecho |
+| T-12 | feat | Registrar y eliminar partidas desde el detalle y reconsultar el progreso | CA-08.1, CA-08.2 | T-10 | Hecho |
+| T-13 | docs | Auditoría, despliegue y pull request | todas | todos | En curso (falta despliegue y PR) |
 
 ### Definition of Done específica
 
@@ -135,8 +135,8 @@ Fuente: [`docs/prd/PRD.md`](../prd/PRD.md). Las reglas `RN-xx` son las del PRD.
 
 | Id | Problema (diagnóstico) | Criterio | Tipo | Depende de | Estado |
 |---|---|---|---|---|---|
-| D-01 | P-01 Eliminar un videojuego deja partidas huérfanas | **CA-D01** DADO un juego con partidas, CUANDO lo elimino, ENTONCES sus partidas también se eliminan y no afectan a otros juegos (RN-14). | fix | — | Pendiente |
-| D-02 | P-02 No se puede editar una partida | **CA-D02.1** DADO una partida, CUANDO cambio su fecha, duración, avance o notas, ENTONCES se guardan los cambios con las mismas validaciones que al crearla. **CA-D02.2** DADO una partida, CUANDO intento cambiar el juego al que pertenece, ENTONCES se rechaza. **CA-D02.3** = CA-08.3. | fix | T-12 | Pendiente |
+| D-01 | P-01 Eliminar un videojuego deja partidas huérfanas | **CA-D01** DADO un juego con partidas, CUANDO lo elimino, ENTONCES sus partidas también se eliminan y no afectan a otros juegos (RN-14). | fix | — | Hecho |
+| D-02 | P-02 No se puede editar una partida | **CA-D02.1** DADO una partida, CUANDO cambio su fecha, duración, avance o notas, ENTONCES se guardan los cambios con las mismas validaciones que al crearla. **CA-D02.2** DADO una partida, CUANDO intento cambiar el juego al que pertenece, ENTONCES se rechaza. **CA-D02.3** = CA-08.3. | fix | T-12 | Hecho |
 
 ### Se difiere
 

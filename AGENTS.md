@@ -26,8 +26,8 @@ docs/            diagnóstico, PRD, backlog, specs, auditoría, bitácora
 ```
 
 ## Comandos
-- `cd backend && npm run dev` · `npm test` · `npm run build`
-- `cd frontend && npm run dev` · `npm run build` · `npm run lint`
+- `cd backend && npm run dev` · `npm test` (MongoDB en memoria) · `npm run build`
+- `cd frontend && npm run dev` · `npm run build` · `npm run lint` · `npm run test:e2e`
 
 ## Convenciones
 - Código y nombres de dominio en español (`horasSemanales`, `rachaActual`); UI en inglés.
