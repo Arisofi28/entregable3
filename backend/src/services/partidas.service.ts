@@ -4,6 +4,7 @@ import { isObjectIdOrHexString } from "mongoose";
 import { PartidaModel } from "../models/Partida.js";
 import { VideojuegoModel } from "../models/Videojuego.js";
 import { AppError } from "../middlewares/AppError.js";
+import { calcularAvanceActual } from "../dominio/progreso.js";
 
 // Verificar que el ID tenga el formato correcto
 function validarId(id: string): void {
@@ -168,13 +169,6 @@ export async function resumenVideojuego(id: string) {
     totalPartidas,
     horasTotales,
     ultimaPartida: ultimaPartida?.fecha ?? null,
-    porcentajeAvanceActual: Math.min(
-      100,
-      partidas.reduce(
-        (acumulado, partida) =>
-          acumulado + partida.porcentajeAvance,
-        0
-      )
-    )
+    porcentajeAvanceActual: calcularAvanceActual(partidas)
   };
 }
