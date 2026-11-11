@@ -44,6 +44,7 @@ Tipos `Hito`, `HitoProgreso`, `Meta`, `MetaEntrada`, `ProgresoSemanal` (forma de
 - **F-09** Los estilos nuevos DEBEN usar solo variables de `index.css` definidas desde DESIGN.md; NO DEBEN usar librerías de UI nuevas.
 - **F-10** Textos en inglés con el tono de DESIGN.md; estados no comunicados solo por color.
 - **F-11** Si el juego está completado o abandonado, NO DEBE ofrecer «SET A GOAL»; explica por qué (RN-13).
+- **F-12** La fecha y la hora de una partida DEBEN elegirse en campos separados: fecha, y hora en formato 12 h (hora, minutos, AM/PM). NO DEBEN cortarse en el formulario rápido del detalle ni en la página de sesiones, en escritorio ni a 390 px. El valor enviado a la API NO DEBE cambiar de formato.
 
 ## 3. Tabla criterio → verificación
 
@@ -64,6 +65,7 @@ Tipos `Hito`, `HitoProgreso`, `Meta`, `MetaEntrada`, `ProgresoSemanal` (forma de
 | CA-08.2 | F-07 | E2E `flujo-e2.mjs`: eliminar partida → cambia el progreso |
 | CA-08.3 | F-07 | E2E `flujo-e2.mjs` (D-02): editar partida → cambia el progreso |
 | CA-09.3 | F-03 | Prueba manual con la API apagada → error + «TRY AGAIN» (no automatizada) |
+| F-12 | — | E2E `flujo-e2.mjs` registra con los campos separados; comprobación con la API: 9:30 PM → 21:30 y 12:05 AM → 00:05 en Ecuador; capturas a 1300 px y 390 px |
 | F-08 | — | `grep -rn "fetch(" frontend/src/components frontend/src/pages` vacío |
 | F-09 | — | Revisión de diseño contra DESIGN.md (tabla en AUDITORIA.md); `grep` de `#` hex en CSS nuevos vacío |
 | Compila | — | `npm run build` y `npm run lint` |
@@ -77,6 +79,7 @@ Tipos `Hito`, `HitoProgreso`, `Meta`, `MetaEntrada`, `ProgresoSemanal` (forma de
 | T-10 | `frontend/src/components/WeeklyProgress.tsx`, `frontend/src/components/WeeklyProgress.css`, `frontend/src/pages/CheckpointPage.tsx` |
 | T-11 | `frontend/src/components/GoalForm.tsx`, `frontend/src/components/GoalForm.css`, `frontend/src/components/WeeklyProgress.tsx`, `frontend/src/pages/CheckpointPage.tsx` |
 | T-10 a T-12, D-02 (verificación) | `frontend/e2e/flujo-e2.mjs`, `frontend/package.json` (script `test:e2e`) |
+| Fix fecha y hora (F-12) | `frontend/src/components/DateTimeFields.tsx`, `frontend/src/components/DateTimeFields.css`, `frontend/src/components/SessionQuickForm.tsx`, `frontend/src/components/SessionQuickForm.css`, `frontend/src/pages/SessionsPage.tsx`, `frontend/e2e/flujo-e2.mjs` |
 | T-12 | `frontend/src/components/SessionQuickForm.tsx`, `frontend/src/components/SessionQuickForm.css`, `frontend/src/pages/CheckpointPage.tsx`, `frontend/src/pages/CheckpointPage.css` |
 
 ## 5. Fuera de alcance

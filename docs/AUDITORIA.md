@@ -73,6 +73,7 @@ Leyenda: ✔ verificado · ⏳ pendiente de verificación manual por la estudian
 | CA-08.2 | F-07 | E2E en navegador | ✔ | eliminar → 0 hrs, hito «Not yet» |
 | CA-08.3 | F-07 | E2E en navegador | ✔ | editar a 150 min → 2.5 / 2 hrs, 125 % |
 | CA-09.3 | F-03 | Revisión de código | ⏳ | `WeeklyProgress` muestra «Loading your week…» (`role="status"`) y error con «TRY AGAIN» (`role="alert"`); falta probarlo con la API apagada |
+| F-12 | — | E2E + prueba contra la API + capturas | ✔ | 9:30 PM → `21:30` y 12:05 AM → `00:05` (Ecuador); el formulario no se corta a 1300 px ni a 390 px |
 | F-08 | — | `grep -rn "fetch(" src/components src/pages` | ✔ | sin resultados |
 | F-09 | — | `grep` de colores fijos + revisión de diseño | ✔ | 0 colores fijos; `44px` → `--tap-target` (corregido) |
 | F-10 | — | Revisión de diseño | ✔ | `revision-diseno.md` #5, #8 |
