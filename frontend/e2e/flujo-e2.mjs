@@ -65,7 +65,7 @@ const evalJs = async expr =>
 
 const helpers = `
 window.$t = (sel, text) => [...document.querySelectorAll(sel)].find(e => e.textContent.includes(text));
-window.$set = (el, v) => { const p = Object.getPrototypeOf(el); Object.getOwnPropertyDescriptor(p, 'value').set.call(el, v); el.dispatchEvent(new Event('input', { bubbles: true })); };
+window.$set = (el, v) => { const p = Object.getPrototypeOf(el); Object.getOwnPropertyDescriptor(p, 'value').set.call(el, v); el.dispatchEvent(new Event('input', { bubbles: true })); el.dispatchEvent(new Event('change', { bubbles: true })); };
 window.$panel = () => document.querySelector('.weekly-panel')?.innerText.replace(/\\s+/g, ' ');
 window.$hist = () => document.querySelector('.checkpoint-history')?.innerText.replace(/\\s+/g, ' ');
 `;
@@ -179,7 +179,7 @@ try {
     $t('.checkpoint-history button', 'LOG HERE').click(); await new Promise(r => setTimeout(r, 300));
     const f = document.querySelector('.session-quick'); const nums = f.querySelectorAll('input[type=number]');
     const d = new Date(Date.now() - 10 * 60000); const local = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
-    $set(f.querySelector('input[type=datetime-local]'), local); $set(nums[0], '60'); $set(nums[1], '15'); f.requestSubmit();`,
+    const [ds, ts] = local.split('T'); const [hh, mm] = ts.split(':').map(Number); const sel = f.querySelectorAll('.datetime-time select'); $set(f.querySelector('input[type=date]'), ds); $set(sel[0], String(hh % 12 || 12)); $set(sel[1], String(mm).padStart(2, '0')); $set(sel[2], hh >= 12 ? 'PM' : 'AM'); $set(nums[0], '60'); $set(nums[1], '15'); f.requestSubmit();`,
     {
       ...panel,
       test: t =>

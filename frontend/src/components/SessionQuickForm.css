@@ -45,11 +45,12 @@
 
 .session-quick-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-3);
 }
 
-.session-quick-grid label {
+.session-quick-grid > label,
+.session-quick-grid > .datetime-time {
   display: grid;
   gap: var(--space-1);
   min-width: 0;
@@ -63,7 +64,8 @@
   text-transform: uppercase;
 }
 
-.session-quick-grid input {
+.session-quick-grid input,
+.session-quick-grid select {
   min-width: 0;
   min-height: var(--tap-target);
   padding: 0 var(--space-2);

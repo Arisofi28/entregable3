@@ -22,6 +22,7 @@ import {
   obtenerResumenVideojuego
 } from "../services/partidasApi";
 import type { CrearPartida, Partida, ResumenVideojuego } from "../services/partidasApi";
+import DateTimeFields from "../components/DateTimeFields";
 import "./SessionsPage.css";
 
 function localDateTimeValue(date: Date): string {
@@ -226,17 +227,21 @@ export default function SessionsPage() {
                 ))}
               </select>
             </label>
-            <label className="session-field">
-              <span>
-                <CalendarDays size={15} /> Date & time
-              </span>
-              <input
-                type="datetime-local"
-                required
-                value={date}
-                onChange={event => setDate(event.target.value)}
-              />
-            </label>
+            <DateTimeFields
+              className="session-field"
+              value={date}
+              onChange={setDate}
+              dateLabel={
+                <>
+                  <CalendarDays size={15} /> Date
+                </>
+              }
+              timeLabel={
+                <>
+                  <Clock3 size={15} /> Time
+                </>
+              }
+            />
             <div className="session-field-row">
               <label className="session-field">
                 <span>
