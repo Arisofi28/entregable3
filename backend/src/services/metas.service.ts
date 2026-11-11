@@ -138,15 +138,3 @@ export async function desactivarMeta(id: string) {
   await meta.save();
   return meta;
 }
-
-// Usadas por la política de Videojuego (T-07)
-export async function desactivarMetaActivaDe(videojuegoId: string) {
-  await MetaModel.updateMany(
-    { videojuego: videojuegoId, activa: true },
-    { $set: { activa: false } }
-  );
-}
-
-export async function eliminarMetasDe(videojuegoId: string) {
-  await MetaModel.deleteMany({ videojuego: videojuegoId });
-}
