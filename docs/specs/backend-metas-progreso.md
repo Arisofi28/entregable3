@@ -133,10 +133,13 @@ Errores siempre con `{ error: { mensaje, statusCode, requestId } }`.
 | T-01 | `backend/test/progreso.dominio.test.ts`, `backend/package.json` (script `test`) |
 | T-02 | `backend/src/dominio/progreso.ts`, `backend/src/services/partidas.service.ts` (usa `calcularAvanceActual`, mismo resultado) |
 | T-03 | `backend/src/models/Meta.ts`, `backend/test/meta.model.test.ts` |
-| T-04 | `backend/src/services/metas.service.ts`, `backend/src/controllers/metas.controller.ts`, `backend/src/routes/metas.routes.ts`, `backend/src/routes/videojuegos.routes.ts`, `backend/src/app.ts`, `backend/test/metas.api.test.ts`, `backend/test/helpers/*` |
-| T-05 | `backend/src/middlewares/errorHandler.ts` |
+| T-04 | `backend/src/services/metas.service.ts`, `backend/src/controllers/metas.controller.ts`, `backend/src/routes/metas.routes.ts`, `backend/src/routes/videojuegos.routes.ts`, `backend/src/app.ts`, `backend/test/metas.api.test.ts`, `backend/test/helpers/api.ts` (API contra MongoDB en memoria con `mongodb-memory-server-core`, sin Atlas) |
+| T-05 | `backend/src/middlewares/errorHandler.ts`, `backend/test/errorHandler.test.ts` |
 | T-06 | `backend/src/services/progreso.service.ts`, `backend/src/controllers/metas.controller.ts`, `backend/src/routes/videojuegos.routes.ts`, `backend/test/metas.api.test.ts` |
 | T-07 | `backend/src/services/videojuegos.service.ts`, `backend/test/politica-borrado.test.ts` |
+
+> **Actualización (2026-11-11, tras la auditoría):** se completó la tabla anterior con `errorHandler.test.ts`
+> (T-05) y con la herramienta de base de datos en memoria que usan los tests de API (T-04), que faltaban.
 
 ## 6. Fuera de alcance
 Historial de semanas pasadas (PA-01), notificaciones, recordatorios, rankings, metas compartidas, WebSocket.

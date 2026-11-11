@@ -2,6 +2,11 @@
 
 **Cubre:** HU-01 a HU-06, HU-08 y CA-09.3 · Tickets T-08 a T-12 · Diseño: [`DESIGN.md`](../../DESIGN.md).
 
+> **Actualización (2026-11-11, tras la auditoría):** la verificación de los criterios de interfaz pasó de
+> «prueba manual» a una prueba automatizada de punta a punta (`frontend/e2e/flujo-e2.mjs`, `npm run test:e2e`),
+> que el agente creó sin que estuviera declarada en esta spec. Se corrigieron las tablas §3 y §4 para que
+> coincidan con lo implementado y con `docs/AUDITORIA.md`. Ver bitácora, momento 8.
+
 ## 1. Contrato
 
 ### `src/services/metasApi.ts`
@@ -44,21 +49,21 @@ Tipos `Hito`, `HitoProgreso`, `Meta`, `MetaEntrada`, `ProgresoSemanal` (forma de
 
 | Criterio | Reglas | Verificación |
 |---|---|---|
-| CA-01.1 | F-01 | Prueba manual: crear meta 5 h / 4 d y verla en el detalle |
-| CA-01.2 | F-04 | Prueba manual: 0 h, 101 h, 8 días → error junto al campo, sin petición |
-| CA-01.3 | F-05 | Prueba manual: forzar 409 (dos pestañas) → mensaje del servidor visible |
-| CA-01.4 | F-11 | Prueba manual con juego completado |
-| CA-02.1 / CA-02.2 | F-04 | Prueba manual: botón «ADD MILESTONE» se deshabilita en 5 |
+| CA-01.1 | F-01 | E2E `flujo-e2.mjs`: crear meta y verla en el detalle |
+| CA-01.2 | F-04 | E2E `flujo-e2.mjs`: 0 h y 8 días → error junto al campo, sin petición |
+| CA-01.3 | F-05 | E2E `flujo-e2.mjs`: meta creada «en otra pestaña» → mensaje 409 del servidor visible |
+| CA-01.4 | F-11 | E2E `flujo-e2.mjs`: juego completado sin «SET A GOAL» y con explicación |
+| CA-02.1 / CA-02.2 | F-04 | E2E `flujo-e2.mjs`: «ADD MILESTONE» se deshabilita en 5 |
 | CA-02.4 | F-01 | Revisión visual: hitos ordenados |
-| CA-03.4 | F-02 | Prueba manual con 140 %: barra llena, texto 140 % |
-| CA-03.8 | F-03 | Prueba manual juego sin meta |
-| CA-05.1 | F-01 | Prueba manual: hito ✓ «Reached» |
-| CA-06.1 | F-07 | Prueba manual: editar meta → porcentaje recalculado |
-| CA-06.2 | F-06 | Prueba manual: «DEACTIVATE» → confirmación → sin meta |
-| CA-08.1 | F-07 | Prueba manual: registrar partida en el detalle → cambia horas/racha |
-| CA-08.2 | F-07 | Prueba manual: eliminar partida → cambia progreso |
-| CA-08.3 | F-07 | Prueba manual (D-02): editar partida → cambia progreso |
-| CA-09.3 | F-03 | Prueba manual con API apagada → error + reintentar |
+| CA-03.4 | F-02 | E2E `flujo-e2.mjs`: con 125 % la barra queda al 100 % y el texto muestra 125 % |
+| CA-03.8 | F-03 | E2E `flujo-e2.mjs`: juego sin meta invita a crear una |
+| CA-05.1 | F-01 | E2E `flujo-e2.mjs`: hito ✓ «Reached» tras registrar partida |
+| CA-06.1 | F-07 | E2E `flujo-e2.mjs`: editar meta → valores recalculados |
+| CA-06.2 | F-06 | E2E `flujo-e2.mjs`: «DEACTIVATE» → confirmación en línea → sin meta |
+| CA-08.1 | F-07 | E2E `flujo-e2.mjs`: registrar partida en el detalle → cambian horas y racha |
+| CA-08.2 | F-07 | E2E `flujo-e2.mjs`: eliminar partida → cambia el progreso |
+| CA-08.3 | F-07 | E2E `flujo-e2.mjs` (D-02): editar partida → cambia el progreso |
+| CA-09.3 | F-03 | Prueba manual con la API apagada → error + «TRY AGAIN» (no automatizada) |
 | F-08 | — | `grep -rn "fetch(" frontend/src/components frontend/src/pages` vacío |
 | F-09 | — | Revisión de diseño contra DESIGN.md (tabla en AUDITORIA.md); `grep` de `#` hex en CSS nuevos vacío |
 | Compila | — | `npm run build` y `npm run lint` |
@@ -71,6 +76,7 @@ Tipos `Hito`, `HitoProgreso`, `Meta`, `MetaEntrada`, `ProgresoSemanal` (forma de
 | T-09 | `frontend/src/services/metasApi.ts` |
 | T-10 | `frontend/src/components/WeeklyProgress.tsx`, `frontend/src/components/WeeklyProgress.css`, `frontend/src/pages/CheckpointPage.tsx` |
 | T-11 | `frontend/src/components/GoalForm.tsx`, `frontend/src/components/GoalForm.css`, `frontend/src/components/WeeklyProgress.tsx`, `frontend/src/pages/CheckpointPage.tsx` |
+| T-10 a T-12, D-02 (verificación) | `frontend/e2e/flujo-e2.mjs`, `frontend/package.json` (script `test:e2e`) |
 | T-12 | `frontend/src/components/SessionQuickForm.tsx`, `frontend/src/components/SessionQuickForm.css`, `frontend/src/pages/CheckpointPage.tsx`, `frontend/src/pages/CheckpointPage.css` |
 
 ## 5. Fuera de alcance
