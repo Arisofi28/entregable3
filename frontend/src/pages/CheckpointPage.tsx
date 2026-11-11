@@ -8,6 +8,7 @@ import {
   Clock3,
   Gamepad2,
   Plus,
+  Power,
   RefreshCw,
   Sparkles,
   Trophy
@@ -19,9 +20,16 @@ import {
   obtenerResumenVideojuego
 } from "../services/partidasApi";
 import type { Partida, ResumenVideojuego } from "../services/partidasApi";
-import { obtenerProgresoSemanal } from "../services/metasApi";
-import type { ProgresoSemanal } from "../services/metasApi";
+import {
+  actualizarMeta,
+  crearMeta,
+  desactivarMeta,
+  obtenerProgresoSemanal
+} from "../services/metasApi";
+import type { MetaEntrada, ProgresoSemanal } from "../services/metasApi";
 import WeeklyProgress from "../components/WeeklyProgress";
+import GoalForm from "../components/GoalForm";
+import "../components/GoalForm.css";
 import "./CheckpointPage.css";
 
 const genreIcons: Record<string, string> = {
@@ -46,6 +54,11 @@ export default function CheckpointPage() {
   const [weeklyProgress, setWeeklyProgress] = useState<ProgresoSemanal | null>(null);
   const [progressLoading, setProgressLoading] = useState(true);
   const [progressError, setProgressError] = useState("");
+  const [goalFormMode, setGoalFormMode] = useState<"create" | "edit" | null>(null);
+  const [confirmingDeactivate, setConfirmingDeactivate] = useState(false);
+  const [deactivating, setDeactivating] = useState(false);
+  const [goalError, setGoalError] = useState("");
+  const [goalNotice, setGoalNotice] = useState("");
 
   const loadProgress = useCallback(async () => {
     if (!id) return;
@@ -94,6 +107,50 @@ export default function CheckpointPage() {
   function retryProgress() {
     setProgressLoading(true);
     void loadProgress();
+  }
+
+  function openGoalForm(mode: "create" | "edit") {
+    setGoalFormMode(mode);
+    setConfirmingDeactivate(false);
+    setGoalError("");
+    setGoalNotice("");
+  }
+
+  // T-11 · crear o editar la meta y volver a pedir el progreso
+  async function saveGoal(data: MetaEntrada) {
+    if (!id) return;
+    const goalId = weeklyProgress?.meta?._id;
+    if (goalFormMode === "edit" && goalId) {
+      await actualizarMeta(goalId, data);
+      setGoalNotice("Goal updated. Your week was recalculated.");
+    } else {
+      await crearMeta(id, data);
+      setGoalNotice("Goal set. Let's make this week count!");
+    }
+    setGoalFormMode(null);
+    await loadProgress();
+  }
+
+  // T-11 · desactivar con confirmación en línea (F-06)
+  async function confirmDeactivate() {
+    const goalId = weeklyProgress?.meta?._id;
+    if (!goalId) return;
+    setDeactivating(true);
+    setGoalError("");
+    try {
+      await desactivarMeta(goalId);
+      setConfirmingDeactivate(false);
+      setGoalNotice("Goal deactivated. It stays in your history.");
+      await loadProgress();
+    } catch (deactivateError) {
+      setGoalError(
+        deactivateError instanceof Error
+          ? deactivateError.message
+          : "Could not deactivate this goal."
+      );
+    } finally {
+      setDeactivating(false);
+    }
   }
 
   function retryCheckpoint() {
@@ -272,7 +329,87 @@ export default function CheckpointPage() {
         error={progressError}
         gameStatus={game.estado}
         onRetry={retryProgress}
-      />
+        onCreateGoal={() => openGoalForm("create")}
+        onEditGoal={() => openGoalForm("edit")}
+        actions={
+          <button
+            className="button danger"
+            type="button"
+            onClick={() => {
+              setGoalFormMode(null);
+              setConfirmingDeactivate(true);
+            }}
+          >
+            <Power size={15} aria-hidden="true" /> DEACTIVATE
+          </button>
+        }
+      >
+        {goalNotice && !goalFormMode && (
+          <p className="weekly-met" role="status">
+            {goalNotice}
+          </p>
+        )}
+        {goalError && (
+          <div className="goal-form-alert" role="alert">
+            {goalError}
+          </div>
+        )}
+        {goalFormMode && (
+          <GoalForm
+            key={goalFormMode}
+            mode={goalFormMode}
+            initial={
+              goalFormMode === "edit" && weeklyProgress?.meta
+                ? {
+                    horasSemanales: weeklyProgress.meta.horasSemanales,
+                    diasPorSemana: weeklyProgress.meta.diasPorSemana,
+                    hitos: weeklyProgress.hitos.map(
+                      ({ descripcion, porcentajeObjetivo }) => ({
+                        descripcion,
+                        porcentajeObjetivo
+                      })
+                    )
+                  }
+                : undefined
+            }
+            onSubmit={saveGoal}
+            onCancel={() => setGoalFormMode(null)}
+          />
+        )}
+        {confirmingDeactivate && (
+          <div
+            className="goal-confirm"
+            role="alertdialog"
+            aria-labelledby="deactivate-title"
+          >
+            <h3 id="deactivate-title">Deactivate this goal?</h3>
+            <p>
+              It will move to your goal history and can&apos;t be edited again. Your
+              sessions and streaks stay the same.
+            </p>
+            <div className="goal-form-actions">
+              <button
+                className="button secondary"
+                type="button"
+                onClick={() => setConfirmingDeactivate(false)}
+                disabled={deactivating}
+                autoFocus
+              >
+                Cancel
+              </button>
+              <button
+                className="button danger"
+                type="button"
+                onClick={() => void confirmDeactivate()}
+                disabled={deactivating}
+              >
+                <Power size={15} aria-hidden="true" />{" "}
+                {deactivating ? "DEACTIVATING..." : "YES, DEACTIVATE"}
+              </button>
+            </div>
+          </div>
+        )}
+      </WeeklyProgress>
 
       {achievementError && (
         <div className="notice" role="alert">
