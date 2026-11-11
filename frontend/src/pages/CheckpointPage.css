@@ -657,3 +657,8 @@
   background: var(--danger-soft);
   color: var(--danger);
 }
+
+.session-row-action.is-edit:hover {
+  background: var(--blue-soft);
+  color: var(--blue);
+}

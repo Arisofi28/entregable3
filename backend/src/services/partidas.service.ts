@@ -172,3 +172,50 @@ export async function resumenVideojuego(id: string) {
     porcentajeAvanceActual: calcularAvanceActual(partidas)
   };
 }
+
+// PUT /api/partidas/:id  (deuda D-02)
+// Mismas validaciones que al crear; no se puede cambiar el videojuego.
+export async function actualizarPartida(id: string, datos: unknown) {
+  validarId(id);
+
+  if (!datos || typeof datos !== "object" || Array.isArray(datos)) {
+    throw new AppError(400, "Debes enviar un objeto JSON válido");
+  }
+
+  const entrada = datos as Record<string, unknown>;
+
+  if ("videojuego" in entrada) {
+    throw new AppError(400, "No se puede cambiar el videojuego de una partida");
+  }
+
+  const permitidos = ["fecha", "duracionMinutos", "porcentajeAvance", "notas"];
+  const extras = Object.keys(entrada).filter(campo => !permitidos.includes(campo));
+  if (extras.length > 0) {
+    throw new AppError(400, `Campos no permitidos: ${extras.join(", ")}`);
+  }
+
+  if (Object.keys(entrada).length === 0) {
+    throw new AppError(400, "Debes enviar al menos un campo");
+  }
+
+  if (
+    "porcentajeAvance" in entrada &&
+    (typeof entrada.porcentajeAvance !== "number" ||
+      !Number.isFinite(entrada.porcentajeAvance) ||
+      entrada.porcentajeAvance < 0 ||
+      entrada.porcentajeAvance > 100)
+  ) {
+    throw new AppError(400, "El avance ganado en la sesión debe estar entre 0 y 100%");
+  }
+
+  const partida = await PartidaModel.findById(id);
+  if (!partida) {
+    throw new AppError(404, "Partida no encontrada");
+  }
+
+  // save() ejecuta los validadores del esquema (duración, fecha, notas)
+  partida.set(entrada);
+  await partida.save();
+
+  return partida;
+}

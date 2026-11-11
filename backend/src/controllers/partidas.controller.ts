@@ -9,6 +9,7 @@ import {
   listarPartidas,
   crearPartida,
   eliminarPartida,
+  actualizarPartida,
   partidasPorVideojuego,
   resumenVideojuego
 } from "../services/partidas.service.js";
@@ -45,6 +46,17 @@ export const crear = asyncHandler(
   async (req, res) => {
     const partida = await crearPartida(req.body);
     res.status(201).json(partida);
+  }
+);
+
+// PUT /api/partidas/:id  (deuda D-02)
+export const actualizar = asyncHandler(
+  async (req, res) => {
+    const partida = await actualizarPartida(
+      String(req.params.id),
+      req.body
+    );
+    res.status(200).json(partida);
   }
 );
 

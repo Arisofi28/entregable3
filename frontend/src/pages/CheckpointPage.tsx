@@ -7,6 +7,7 @@ import {
   Check,
   Clock3,
   Gamepad2,
+  Pencil,
   Plus,
   Power,
   RefreshCw,
@@ -17,6 +18,7 @@ import {
 import { actualizarLogro, obtenerVideojuego } from "../services/videojuegosApi";
 import type { Videojuego } from "../services/videojuegosApi";
 import {
+  actualizarPartida,
   crearPartida,
   eliminarPartida,
   obtenerPartidasDeVideojuego,
@@ -66,6 +68,7 @@ export default function CheckpointPage() {
   const [goalNotice, setGoalNotice] = useState("");
   // T-12 · partidas desde el detalle
   const [loggingSession, setLoggingSession] = useState(false);
+  const [editingSessionId, setEditingSessionId] = useState<string | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [deletingSessionId, setDeletingSessionId] = useState<string | null>(null);
   const [sessionMessage, setSessionMessage] = useState("");
@@ -131,6 +134,15 @@ export default function CheckpointPage() {
     setLoggingSession(false);
     setSessionError("");
     setSessionMessage("Session logged. Your week and streak are up to date.");
+    await refreshAfterSessionChange();
+  }
+
+  // D-02 · editar una partida y reconsultar el progreso (CA-08.3)
+  async function editSession(sessionId: string, values: SessionValues) {
+    await actualizarPartida(sessionId, values);
+    setEditingSessionId(null);
+    setSessionError("");
+    setSessionMessage("Session updated. Your week was recalculated.");
     await refreshAfterSessionChange();
   }
 
@@ -564,6 +576,23 @@ export default function CheckpointPage() {
             <div className="checkpoint-session-list">
               {sessions.slice(0, 5).map(session => {
                 const sessionDate = new Date(session.fecha);
+                if (editingSessionId === session._id) {
+                  return (
+                    <SessionQuickForm
+                      key={session._id}
+                      title="Edit session"
+                      submitLabel="SAVE CHANGES"
+                      initial={{
+                        fecha: session.fecha,
+                        duracionMinutos: session.duracionMinutos,
+                        porcentajeAvance: session.porcentajeAvance,
+                        notas: session.notas
+                      }}
+                      onSubmit={values => editSession(session._id, values)}
+                      onCancel={() => setEditingSessionId(null)}
+                    />
+                  );
+                }
                 return (
                   <article className="checkpoint-session" key={session._id}>
                     <span className="checkpoint-session-icon">
@@ -607,14 +636,28 @@ export default function CheckpointPage() {
                         </button>
                       </span>
                     ) : (
-                      <button
-                        className="session-row-action"
-                        type="button"
-                        aria-label={`Delete session from ${sessionDate.toLocaleDateString()}`}
-                        onClick={() => setConfirmDeleteId(session._id)}
-                      >
-                        <Trash2 size={15} aria-hidden="true" />
-                      </button>
+                      <>
+                        <button
+                          className="session-row-action is-edit"
+                          type="button"
+                          aria-label={`Edit session from ${sessionDate.toLocaleDateString()}`}
+                          onClick={() => {
+                            setEditingSessionId(session._id);
+                            setConfirmDeleteId(null);
+                            setSessionMessage("");
+                          }}
+                        >
+                          <Pencil size={15} aria-hidden="true" />
+                        </button>
+                        <button
+                          className="session-row-action"
+                          type="button"
+                          aria-label={`Delete session from ${sessionDate.toLocaleDateString()}`}
+                          onClick={() => setConfirmDeleteId(session._id)}
+                        >
+                          <Trash2 size={15} aria-hidden="true" />
+                        </button>
+                      </>
                     )}
                   </article>
                 );
