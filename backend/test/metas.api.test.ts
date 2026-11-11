@@ -286,3 +286,106 @@ describe("GET, PUT y PATCH de metas", () => {
     );
   });
 });
+
+describe("GET /api/videojuegos/:id/progreso-semanal (T-06)", () => {
+  test("CA-03.8 / CA-03.9 sin meta y sin partidas: meta null y todo en 0", async () => {
+    const juego = await crearJuego();
+    const { status, body } = await api.pedir(`/videojuegos/${juego}/progreso-semanal`);
+    assert.equal(status, 200);
+    assert.equal(body.meta, null);
+    assert.equal(body.porcentajeHoras, null);
+    assert.equal(body.metaCumplida, null);
+    assert.deepEqual(body.hitos, []);
+    assert.equal(body.horasSemana, 0);
+    assert.equal(body.diasJugadosSemana, 0);
+    assert.equal(body.rachaActual, 0);
+    assert.equal(body.mejorRacha, 0);
+    assert.equal(body.diasSemana.length, 7);
+    assert.match(body.semana.inicio, /^\d{4}-\d{2}-\d{2}$/);
+  });
+
+  test("CA-03.2 / CA-05.1 con meta y una partida reciente calcula horas, racha e hitos", async () => {
+    const juego = await crearJuego();
+    await api.pedir("/metas", { method: "POST", body: metaValida(juego) });
+    const hace5Min = new Date(Date.now() - 5 * 60_000).toISOString();
+    await api.pedir("/partidas", {
+      method: "POST",
+      body: {
+        videojuego: juego,
+        fecha: hace5Min,
+        duracionMinutos: 90,
+        porcentajeAvance: 30
+      }
+    });
+    const { body } = await api.pedir(`/videojuegos/${juego}/progreso-semanal`);
+    assert.deepEqual(
+      {
+        horasSemanales: body.meta.horasSemanales,
+        diasPorSemana: body.meta.diasPorSemana
+      },
+      { horasSemanales: 5, diasPorSemana: 4 }
+    );
+    assert.equal(body.horasSemana, 1.5);
+    assert.equal(body.porcentajeHoras, 30);
+    assert.equal(body.diasJugadosSemana, 1);
+    assert.equal(body.rachaActual, 1);
+    assert.equal(body.metaCumplida, false);
+    assert.deepEqual(
+      body.hitos.map((h: { porcentajeObjetivo: number; alcanzado: boolean }) => [
+        h.porcentajeObjetivo,
+        h.alcanzado
+      ]),
+      [
+        [25, true],
+        [50, false]
+      ]
+    );
+  });
+
+  test("CA-03.10 tras editar la meta el porcentaje usa la meta nueva", async () => {
+    const juego = await crearJuego();
+    const { body: meta } = await api.pedir("/metas", {
+      method: "POST",
+      body: metaValida(juego)
+    });
+    await api.pedir("/partidas", {
+      method: "POST",
+      body: {
+        videojuego: juego,
+        fecha: new Date(Date.now() - 60_000).toISOString(),
+        duracionMinutos: 120,
+        porcentajeAvance: 0
+      }
+    });
+    assert.equal(
+      (await api.pedir(`/videojuegos/${juego}/progreso-semanal`)).body.porcentajeHoras,
+      40
+    );
+    await api.pedir(`/metas/${meta._id}`, { method: "PUT", body: { horasSemanales: 2 } });
+    assert.equal(
+      (await api.pedir(`/videojuegos/${juego}/progreso-semanal`)).body.porcentajeHoras,
+      100
+    );
+  });
+
+  test("CA-09.1 / CA-09.2 id inválido 400 y juego inexistente 404", async () => {
+    const invalido = await api.pedir("/videojuegos/no-es-un-id/progreso-semanal");
+    assert.equal(invalido.status, 400);
+    assert.equal(invalido.body.error.statusCode, 400);
+    assert.equal(
+      (await api.pedir("/videojuegos/64b000000000000000000099/progreso-semanal")).status,
+      404
+    );
+  });
+
+  test("R-24 el resumen de E1 no cambia de forma", async () => {
+    const juego = await crearJuego();
+    const { body } = await api.pedir(`/videojuegos/${juego}/resumen`);
+    assert.deepEqual(Object.keys(body).sort(), [
+      "horasTotales",
+      "porcentajeAvanceActual",
+      "totalPartidas",
+      "ultimaPartida"
+    ]);
+  });
+});

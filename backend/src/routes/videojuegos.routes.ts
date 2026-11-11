@@ -2,7 +2,10 @@
 import { Router } from "express";
 
 import * as controller from "../controllers/videojuegos.controller.js";
-import { listarPorVideojuego as listarMetasPorVideojuego } from "../controllers/metas.controller.js";
+import {
+  listarPorVideojuego as listarMetasPorVideojuego,
+  progresoSemanal
+} from "../controllers/metas.controller.js";
 
 import {
   listarPorVideojuego,
@@ -42,5 +45,8 @@ router.get(
 
 // E2: historial de metas del videojuego (activa primero)
 router.get("/:id/metas", listarMetasPorVideojuego);
+
+// E2: progreso de la semana actual, racha e hitos
+router.get("/:id/progreso-semanal", progresoSemanal);
 
 export default router;

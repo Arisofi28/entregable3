@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 
 import * as service from "../services/metas.service.js";
+import { obtenerProgresoSemanal } from "../services/progreso.service.js";
 
 type AsyncController = (req: Request, res: Response, next: NextFunction) => Promise<void>;
 
@@ -38,4 +39,10 @@ export const desactivar = manejarAsync(async (req, res) => {
 export const listarPorVideojuego = manejarAsync(async (req, res) => {
   const metas = await service.listarMetasDeVideojuego(String(req.params.id));
   res.status(200).json(metas);
+});
+
+// GET /api/videojuegos/:id/progreso-semanal
+export const progresoSemanal = manejarAsync(async (req, res) => {
+  const progreso = await obtenerProgresoSemanal(String(req.params.id));
+  res.status(200).json(progreso);
 });
