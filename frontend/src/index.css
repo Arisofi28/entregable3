@@ -49,6 +49,8 @@
   --radius-md: 15px;
   --radius-lg: 25px;
   --radius-full: 999px;
+
+  --tap-target: 44px;
 }
 
 * {

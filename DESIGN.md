@@ -47,6 +47,7 @@ fondo `-soft` cumplen WCAG AA (≥ 4.5:1) para texto normal.
 - Radios: `--radius-sm` 10px (chips, inputs pequeños) · `--radius-md` 15px (botones, filas) ·
   `--radius-lg` 25px (tarjetas).
 - Sombra única de tarjeta: `--shadow`. No se inventan sombras nuevas.
+- Objetivo táctil mínimo: `--tap-target` 44px (botones, inputs, iconos accionables).
 
 ## 4. Componentes
 

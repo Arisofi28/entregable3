@@ -38,7 +38,7 @@
 }
 
 .weekly-heading-actions .button {
-  min-height: 44px;
+  min-height: var(--tap-target);
   font-size: var(--text-xs);
 }
 

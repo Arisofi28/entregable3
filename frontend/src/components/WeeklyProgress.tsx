@@ -103,13 +103,7 @@ export default function WeeklyProgress({
                 )}
                 {actions}
               </>
-            ) : (
-              canCreate && (
-                <button className="button" type="button" onClick={onCreateGoal}>
-                  <Plus size={15} aria-hidden="true" /> SET A GOAL
-                </button>
-              )
-            )}
+            ) : null}
           </div>
         )}
       </div>

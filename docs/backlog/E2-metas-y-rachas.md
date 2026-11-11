@@ -149,3 +149,4 @@ Fuente: [`docs/prd/PRD.md`](../prd/PRD.md). Las reglas `RN-xx` son las del PRD.
 | D-07 | P-09 Colores y medidas fijos en CSS existentes | Requiere revisar todas las páginas; E2 solo garantiza que el CSS nuevo use tokens. |
 | D-08 | P-10 Orígenes CORS escritos en el código | Funciona con `CLIENT_URL`; mover a configuración no cambia el comportamiento. |
 | D-09 | P-11 Fechas mostradas con la zona del navegador | La persona juega en Ecuador (PA-02); el cálculo de la semana ya usa la zona de Ecuador en el backend. |
+| D-10 | Encabezado no cabe en 390 px y desborda toda la página (encontrado en la revisión de diseño de E2) | Ya existía en todas las páginas del Proyecto 3; arreglarlo es un rediseño de la navegación, fuera del alcance de E2. |
