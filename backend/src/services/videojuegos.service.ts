@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { VideojuegoModel } from "../models/Videojuego.js";
 import { MetaModel } from "../models/Meta.js";
+import { PartidaModel } from "../models/Partida.js";
 import { AppError } from "../middlewares/AppError.js";
 
 // Estados que no admiten meta activa (E2 · RN-13)
@@ -114,6 +115,9 @@ export async function eliminarVideojuego(id: string) {
 
   // E2 · RN-14: no quedan metas huérfanas (con sus hitos embebidos)
   await MetaModel.deleteMany({ videojuego: videojuego._id });
+
+  // D-01 · tampoco quedan partidas huérfanas
+  await PartidaModel.deleteMany({ videojuego: videojuego._id });
 
   return videojuego;
 }

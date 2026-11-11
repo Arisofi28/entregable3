@@ -99,3 +99,46 @@ describe("cambiar el estado de un videojuego (RN-13)", () => {
     assert.equal((await api.pedir(`/metas/${meta}`)).body.activa, true);
   });
 });
+
+describe("D-01 · eliminar un videojuego no deja partidas huérfanas", () => {
+  async function crearPartida(videojuego: string) {
+    const { status, body } = await api.pedir("/partidas", {
+      method: "POST",
+      body: {
+        videojuego,
+        fecha: "2026-11-10T15:00:00.000Z",
+        duracionMinutos: 30,
+        porcentajeAvance: 10
+      }
+    });
+    assert.equal(status, 201);
+    return body._id as string;
+  }
+
+  test("CA-D01 elimina las partidas del juego y conserva las de otros juegos", async () => {
+    const juegoA = await crearJuego("Juego A");
+    const juegoB = await crearJuego("Juego B");
+    await crearPartida(juegoA);
+    await crearPartida(juegoA);
+    const deB = await crearPartida(juegoB);
+
+    assert.equal(
+      (await api.pedir(`/videojuegos/${juegoA}`, { method: "DELETE" })).status,
+      204
+    );
+
+    const { body: todas } = await api.pedir("/partidas");
+    assert.deepEqual(
+      todas.map((partida: { _id: string }) => partida._id),
+      [deB]
+    );
+  });
+
+  test("CA-D01 con id inválido o juego inexistente no borra partidas", async () => {
+    const juego = await crearJuego();
+    await crearPartida(juego);
+    await api.pedir("/videojuegos/abc", { method: "DELETE" });
+    await api.pedir("/videojuegos/64b000000000000000000099", { method: "DELETE" });
+    assert.equal((await api.pedir("/partidas")).body.length, 1);
+  });
+});
