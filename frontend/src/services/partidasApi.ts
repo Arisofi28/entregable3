@@ -1,4 +1,3 @@
-
 import { apiRequest } from "./api";
 
 import type { Videojuego } from "./videojuegosApi";
@@ -37,44 +36,42 @@ export function obtenerPartidas(): Promise<Partida[]> {
 }
 
 // POST registrar una partida
-export function crearPartida(
-  datos: CrearPartida
-): Promise<Partida> {
-  return apiRequest<Partida>(
-    "/partidas",
-    {
-      method: "POST",
-      body: JSON.stringify(datos)
-    }
-  );
+export function crearPartida(datos: CrearPartida): Promise<Partida> {
+  return apiRequest<Partida>("/partidas", {
+    method: "POST",
+    body: JSON.stringify(datos)
+  });
 }
 
 // DELETE una partida
-export function eliminarPartida(
-  id: string
-): Promise<void> {
-  return apiRequest<void>(
-    `/partidas/${id}`,
-    {
-      method: "DELETE"
-    }
-  );
+export function eliminarPartida(id: string): Promise<void> {
+  return apiRequest<void>(`/partidas/${id}`, {
+    method: "DELETE"
+  });
 }
 
 // GET partidas de un videojuego
-export function obtenerPartidasDeVideojuego(
-  videojuegoId: string
-): Promise<Partida[]> {
-  return apiRequest<Partida[]>(
-    `/videojuegos/${videojuegoId}/partidas`
-  );
+export function obtenerPartidasDeVideojuego(videojuegoId: string): Promise<Partida[]> {
+  return apiRequest<Partida[]>(`/videojuegos/${videojuegoId}/partidas`);
 }
 
 // GET resumen calculado
 export function obtenerResumenVideojuego(
   videojuegoId: string
 ): Promise<ResumenVideojuego> {
-  return apiRequest<ResumenVideojuego>(
-    `/videojuegos/${videojuegoId}/resumen`
-  );
+  return apiRequest<ResumenVideojuego>(`/videojuegos/${videojuegoId}/resumen`);
+}
+
+// Datos editables de una partida (deuda D-02)
+export type ActualizarPartida = Partial<Omit<CrearPartida, "videojuego">>;
+
+// PUT editar una partida
+export function actualizarPartida(
+  id: string,
+  datos: ActualizarPartida
+): Promise<Partida> {
+  return apiRequest<Partida>(`/partidas/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(datos)
+  });
 }

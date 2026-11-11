@@ -7,18 +7,36 @@ import {
   Check,
   Clock3,
   Gamepad2,
+  Pencil,
   Plus,
+  Power,
   RefreshCw,
   Sparkles,
+  Trash2,
   Trophy
 } from "lucide-react";
 import { actualizarLogro, obtenerVideojuego } from "../services/videojuegosApi";
 import type { Videojuego } from "../services/videojuegosApi";
 import {
+  actualizarPartida,
+  crearPartida,
+  eliminarPartida,
   obtenerPartidasDeVideojuego,
   obtenerResumenVideojuego
 } from "../services/partidasApi";
 import type { Partida, ResumenVideojuego } from "../services/partidasApi";
+import {
+  actualizarMeta,
+  crearMeta,
+  desactivarMeta,
+  obtenerProgresoSemanal
+} from "../services/metasApi";
+import type { MetaEntrada, ProgresoSemanal } from "../services/metasApi";
+import WeeklyProgress from "../components/WeeklyProgress";
+import GoalForm from "../components/GoalForm";
+import SessionQuickForm from "../components/SessionQuickForm";
+import type { SessionValues } from "../components/SessionQuickForm";
+import "../components/GoalForm.css";
 import "./CheckpointPage.css";
 
 const genreIcons: Record<string, string> = {
@@ -39,6 +57,38 @@ export default function CheckpointPage() {
   const [error, setError] = useState("");
   const [updatingAchievement, setUpdatingAchievement] = useState<string | null>(null);
   const [achievementError, setAchievementError] = useState("");
+  // E2 · progreso semanal (carga independiente del resto del detalle)
+  const [weeklyProgress, setWeeklyProgress] = useState<ProgresoSemanal | null>(null);
+  const [progressLoading, setProgressLoading] = useState(true);
+  const [progressError, setProgressError] = useState("");
+  const [goalFormMode, setGoalFormMode] = useState<"create" | "edit" | null>(null);
+  const [confirmingDeactivate, setConfirmingDeactivate] = useState(false);
+  const [deactivating, setDeactivating] = useState(false);
+  const [goalError, setGoalError] = useState("");
+  const [goalNotice, setGoalNotice] = useState("");
+  // T-12 · partidas desde el detalle
+  const [loggingSession, setLoggingSession] = useState(false);
+  const [editingSessionId, setEditingSessionId] = useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [deletingSessionId, setDeletingSessionId] = useState<string | null>(null);
+  const [sessionMessage, setSessionMessage] = useState("");
+  const [sessionError, setSessionError] = useState("");
+
+  const loadProgress = useCallback(async () => {
+    if (!id) return;
+    setProgressError("");
+    try {
+      setWeeklyProgress(await obtenerProgresoSemanal(id));
+    } catch (progressLoadError) {
+      setProgressError(
+        progressLoadError instanceof Error
+          ? progressLoadError.message
+          : "Please try again."
+      );
+    } finally {
+      setProgressLoading(false);
+    }
+  }, [id]);
 
   const loadCheckpoint = useCallback(async () => {
     if (!id) return;
@@ -52,7 +102,9 @@ export default function CheckpointPage() {
       setSummary(summaryData);
       setSessions(sessionData);
     } catch (loadError) {
-      setError(loadError instanceof Error ? loadError.message : "Could not load this checkpoint.");
+      setError(
+        loadError instanceof Error ? loadError.message : "Could not load this checkpoint."
+      );
     } finally {
       setLoading(false);
     }
@@ -61,6 +113,101 @@ export default function CheckpointPage() {
   useEffect(() => {
     void Promise.resolve().then(loadCheckpoint);
   }, [loadCheckpoint]);
+
+  useEffect(() => {
+    void Promise.resolve().then(loadProgress);
+  }, [loadProgress]);
+
+  function retryProgress() {
+    setProgressLoading(true);
+    void loadProgress();
+  }
+
+  // F-07 · tras cambiar una partida se vuelven a pedir resumen, partidas y progreso
+  async function refreshAfterSessionChange() {
+    await Promise.all([loadCheckpoint(), loadProgress()]);
+  }
+
+  async function logSession(values: SessionValues) {
+    if (!id) return;
+    await crearPartida({ videojuego: id, ...values });
+    setLoggingSession(false);
+    setSessionError("");
+    setSessionMessage("Session logged. Your week and streak are up to date.");
+    await refreshAfterSessionChange();
+  }
+
+  // D-02 · editar una partida y reconsultar el progreso (CA-08.3)
+  async function editSession(sessionId: string, values: SessionValues) {
+    await actualizarPartida(sessionId, values);
+    setEditingSessionId(null);
+    setSessionError("");
+    setSessionMessage("Session updated. Your week was recalculated.");
+    await refreshAfterSessionChange();
+  }
+
+  async function deleteSession(sessionId: string) {
+    setDeletingSessionId(sessionId);
+    setSessionError("");
+    try {
+      await eliminarPartida(sessionId);
+      setConfirmDeleteId(null);
+      setSessionMessage("Session deleted. Your week was recalculated.");
+      await refreshAfterSessionChange();
+    } catch (deleteError) {
+      setSessionError(
+        deleteError instanceof Error
+          ? deleteError.message
+          : "Could not delete this session."
+      );
+    } finally {
+      setDeletingSessionId(null);
+    }
+  }
+
+  function openGoalForm(mode: "create" | "edit") {
+    setGoalFormMode(mode);
+    setConfirmingDeactivate(false);
+    setGoalError("");
+    setGoalNotice("");
+  }
+
+  // T-11 · crear o editar la meta y volver a pedir el progreso
+  async function saveGoal(data: MetaEntrada) {
+    if (!id) return;
+    const goalId = weeklyProgress?.meta?._id;
+    if (goalFormMode === "edit" && goalId) {
+      await actualizarMeta(goalId, data);
+      setGoalNotice("Goal updated. Your week was recalculated.");
+    } else {
+      await crearMeta(id, data);
+      setGoalNotice("Goal set. Let's make this week count!");
+    }
+    setGoalFormMode(null);
+    await loadProgress();
+  }
+
+  // T-11 · desactivar con confirmación en línea (F-06)
+  async function confirmDeactivate() {
+    const goalId = weeklyProgress?.meta?._id;
+    if (!goalId) return;
+    setDeactivating(true);
+    setGoalError("");
+    try {
+      await desactivarMeta(goalId);
+      setConfirmingDeactivate(false);
+      setGoalNotice("Goal deactivated. It stays in your history.");
+      await loadProgress();
+    } catch (deactivateError) {
+      setGoalError(
+        deactivateError instanceof Error
+          ? deactivateError.message
+          : "Could not deactivate this goal."
+      );
+    } finally {
+      setDeactivating(false);
+    }
+  }
 
   function retryCheckpoint() {
     setLoading(true);
@@ -76,14 +223,25 @@ export default function CheckpointPage() {
       const updatedGame = await actualizarLogro(id, achievementId, !earned);
       setGame(updatedGame);
     } catch (updateError) {
-      setAchievementError(updateError instanceof Error ? updateError.message : "Could not update this achievement.");
+      setAchievementError(
+        updateError instanceof Error
+          ? updateError.message
+          : "Could not update this achievement."
+      );
     } finally {
       setUpdatingAchievement(null);
     }
   }
 
   if (loading) {
-    return <main className="page-container"><div className="state-panel checkpoint-state" role="status"><RefreshCw className="checkpoint-spin" size={25} /><p>Loading your checkpoint...</p></div></main>;
+    return (
+      <main className="page-container">
+        <div className="state-panel checkpoint-state" role="status">
+          <RefreshCw className="checkpoint-spin" size={25} />
+          <p>Loading your checkpoint...</p>
+        </div>
+      </main>
+    );
   }
 
   if (error || !game || !summary) {
@@ -93,8 +251,12 @@ export default function CheckpointPage() {
           <Gamepad2 size={32} />
           <h2>Checkpoint unavailable</h2>
           <p>{error || "The game summary is currently unavailable."}</p>
-          <button className="button" type="button" onClick={retryCheckpoint}><RefreshCw size={16} /> TRY AGAIN</button>
-          <Link className="checkpoint-back-link" to="/games"><ArrowLeft size={15} /> Back to library</Link>
+          <button className="button" type="button" onClick={retryCheckpoint}>
+            <RefreshCw size={16} /> TRY AGAIN
+          </button>
+          <Link className="checkpoint-back-link" to="/games">
+            <ArrowLeft size={15} /> Back to library
+          </Link>
         </div>
       </main>
     );
@@ -108,7 +270,14 @@ export default function CheckpointPage() {
 
   return (
     <main className="checkpoint-page page-container">
-      <div className="checkpoint-back-row"><Link className="checkpoint-back-link" to="/games"><ArrowLeft size={15} /> ALL GAMES</Link><Link className="checkpoint-edit-link" to={`/games/${game._id}/edit`}>EDIT GAME <ArrowRight size={14} /></Link></div>
+      <div className="checkpoint-back-row">
+        <Link className="checkpoint-back-link" to="/games">
+          <ArrowLeft size={15} /> ALL GAMES
+        </Link>
+        <Link className="checkpoint-edit-link" to={`/games/${game._id}/edit`}>
+          EDIT GAME <ArrowRight size={14} />
+        </Link>
+      </div>
 
       <section className="checkpoint-hero">
         <div className="checkpoint-hero-art" aria-hidden="true">
@@ -118,70 +287,390 @@ export default function CheckpointPage() {
           <span className="checkpoint-art-star star-b">✧</span>
         </div>
         <div className="checkpoint-title-area">
-          <span className="checkpoint-platform">{game.plataforma} <span>·</span> {game.genero}</span>
+          <span className="checkpoint-platform">
+            {game.plataforma} <span>·</span> {game.genero}
+          </span>
           <h1>{game.nombre}</h1>
           <span className={`checkpoint-status status-${game.estado}`}>{game.estado}</span>
           <p>Your adventure, one milestone at a time.</p>
-          <Link className="button checkpoint-session-button" to="/sessions"><Plus size={16} /> LOG A SESSION <ArrowRight size={16} /></Link>
+          <Link className="button checkpoint-session-button" to="/sessions">
+            <Plus size={16} /> LOG A SESSION <ArrowRight size={16} />
+          </Link>
         </div>
         <div className="checkpoint-progress">
           <svg viewBox="0 0 190 190" role="img" aria-label={`${progress}% complete`}>
             <circle className="checkpoint-ring-track" cx="95" cy="95" r={radius} />
-            <circle className="checkpoint-ring-value" cx="95" cy="95" r={radius} strokeDasharray={circumference} strokeDashoffset={circumference * (1 - progress / 100)} />
+            <circle
+              className="checkpoint-ring-value"
+              cx="95"
+              cy="95"
+              r={radius}
+              strokeDasharray={circumference}
+              strokeDashoffset={circumference * (1 - progress / 100)}
+            />
           </svg>
-          <div className="checkpoint-progress-label"><strong>{progress}%</strong><span>COMPLETE</span></div>
-          <span className="checkpoint-progress-caption">{progress >= 100 ? "Adventure complete!" : "Keep it going!"}</span>
+          <div className="checkpoint-progress-label">
+            <strong>{progress}%</strong>
+            <span>COMPLETE</span>
+          </div>
+          <span className="checkpoint-progress-caption">
+            {progress >= 100 ? "Adventure complete!" : "Keep it going!"}
+          </span>
         </div>
       </section>
 
       <section className="checkpoint-stats" aria-label="Game statistics">
-        <article className="checkpoint-stat stat-hours"><span className="checkpoint-stat-icon"><Clock3 size={20} /></span><div><small>TOTAL PLAYTIME</small><strong>{summary.horasTotales}<span> hrs</span></strong></div></article>
-        <article className="checkpoint-stat stat-sessions"><span className="checkpoint-stat-icon"><Gamepad2 size={20} /></span><div><small>SESSIONS PLAYED</small><strong>{summary.totalPartidas}<span> sessions</span></strong></div></article>
-        <article className="checkpoint-stat stat-achievements"><span className="checkpoint-stat-icon"><Trophy size={20} /></span><div><small>ACHIEVEMENTS</small><strong>{achieved}<span> / {game.logros.length}</span></strong></div></article>
-        <article className="checkpoint-stat stat-latest"><span className="checkpoint-stat-icon"><CalendarDays size={20} /></span><div><small>LAST PLAYED</small><strong>{latestDate ? latestDate.toLocaleDateString(undefined, { month: "short", day: "numeric" }) : "Not yet"}<span>{latestDate ? latestDate.toLocaleDateString(undefined, { year: "numeric" }) : ""}</span></strong></div></article>
+        <article className="checkpoint-stat stat-hours">
+          <span className="checkpoint-stat-icon">
+            <Clock3 size={20} />
+          </span>
+          <div>
+            <small>TOTAL PLAYTIME</small>
+            <strong>
+              {summary.horasTotales}
+              <span> hrs</span>
+            </strong>
+          </div>
+        </article>
+        <article className="checkpoint-stat stat-sessions">
+          <span className="checkpoint-stat-icon">
+            <Gamepad2 size={20} />
+          </span>
+          <div>
+            <small>SESSIONS PLAYED</small>
+            <strong>
+              {summary.totalPartidas}
+              <span> sessions</span>
+            </strong>
+          </div>
+        </article>
+        <article className="checkpoint-stat stat-achievements">
+          <span className="checkpoint-stat-icon">
+            <Trophy size={20} />
+          </span>
+          <div>
+            <small>ACHIEVEMENTS</small>
+            <strong>
+              {achieved}
+              <span> / {game.logros.length}</span>
+            </strong>
+          </div>
+        </article>
+        <article className="checkpoint-stat stat-latest">
+          <span className="checkpoint-stat-icon">
+            <CalendarDays size={20} />
+          </span>
+          <div>
+            <small>LAST PLAYED</small>
+            <strong>
+              {latestDate
+                ? latestDate.toLocaleDateString(undefined, {
+                    month: "short",
+                    day: "numeric"
+                  })
+                : "Not yet"}
+              <span>
+                {latestDate
+                  ? latestDate.toLocaleDateString(undefined, { year: "numeric" })
+                  : ""}
+              </span>
+            </strong>
+          </div>
+        </article>
       </section>
 
-      {achievementError && <div className="notice" role="alert"><p>{achievementError}</p></div>}
+      <WeeklyProgress
+        progress={weeklyProgress}
+        loading={progressLoading}
+        error={progressError}
+        gameStatus={game.estado}
+        onRetry={retryProgress}
+        onCreateGoal={() => openGoalForm("create")}
+        onEditGoal={() => openGoalForm("edit")}
+        actions={
+          <button
+            className="button danger"
+            type="button"
+            onClick={() => {
+              setGoalFormMode(null);
+              setConfirmingDeactivate(true);
+            }}
+          >
+            <Power size={15} aria-hidden="true" /> DEACTIVATE
+          </button>
+        }
+      >
+        {goalNotice && !goalFormMode && (
+          <p className="weekly-met" role="status">
+            {goalNotice}
+          </p>
+        )}
+        {goalError && (
+          <div className="goal-form-alert" role="alert">
+            {goalError}
+          </div>
+        )}
+        {goalFormMode && (
+          <GoalForm
+            key={goalFormMode}
+            mode={goalFormMode}
+            initial={
+              goalFormMode === "edit" && weeklyProgress?.meta
+                ? {
+                    horasSemanales: weeklyProgress.meta.horasSemanales,
+                    diasPorSemana: weeklyProgress.meta.diasPorSemana,
+                    hitos: weeklyProgress.hitos.map(
+                      ({ descripcion, porcentajeObjetivo }) => ({
+                        descripcion,
+                        porcentajeObjetivo
+                      })
+                    )
+                  }
+                : undefined
+            }
+            onSubmit={saveGoal}
+            onCancel={() => setGoalFormMode(null)}
+          />
+        )}
+        {confirmingDeactivate && (
+          <div
+            className="goal-confirm"
+            role="alertdialog"
+            aria-labelledby="deactivate-title"
+          >
+            <h3 id="deactivate-title">Deactivate this goal?</h3>
+            <p>
+              It will move to your goal history and can&apos;t be edited again. Your
+              sessions and streaks stay the same.
+            </p>
+            <div className="goal-form-actions">
+              <button
+                className="button secondary"
+                type="button"
+                onClick={() => setConfirmingDeactivate(false)}
+                disabled={deactivating}
+                autoFocus
+              >
+                Cancel
+              </button>
+              <button
+                className="button danger"
+                type="button"
+                onClick={() => void confirmDeactivate()}
+                disabled={deactivating}
+              >
+                <Power size={15} aria-hidden="true" />{" "}
+                {deactivating ? "DEACTIVATING..." : "YES, DEACTIVATE"}
+              </button>
+            </div>
+          </div>
+        )}
+      </WeeklyProgress>
+
+      {achievementError && (
+        <div className="notice" role="alert">
+          <p>{achievementError}</p>
+        </div>
+      )}
 
       <div className="checkpoint-content-grid">
         <section className="achievement-panel surface-card">
-          <div className="checkpoint-section-heading"><div><span className="page-kicker"><Trophy size={14} /> LITTLE VICTORIES</span><h2>Achievements</h2></div><span className="achievement-total">{achieved} of {game.logros.length} earned</span></div>
+          <div className="checkpoint-section-heading">
+            <div>
+              <span className="page-kicker">
+                <Trophy size={14} /> LITTLE VICTORIES
+              </span>
+              <h2>Achievements</h2>
+            </div>
+            <span className="achievement-total">
+              {achieved} of {game.logros.length} earned
+            </span>
+          </div>
           {game.logros.length ? (
             <div className="checkpoint-achievements">
               {game.logros.map((achievement, index) => (
-                <label className={`checkpoint-achievement ${achievement.obtenido ? "earned" : ""}`} key={achievement._id}>
-                  <input type="checkbox" checked={achievement.obtenido} disabled={updatingAchievement === achievement._id} onChange={() => void toggleAchievement(achievement._id, achievement.obtenido)} />
-                  <span className={`achievement-medal medal-${index % 4}`}><Trophy size={18} /></span>
-                  <span className="achievement-copy"><strong>{achievement.nombre}</strong><small>{achievement.obtenido ? "Unlocked — nice work!" : "A new milestone to reach"}</small></span>
-                  <span className="achievement-check">{achievement.obtenido && <Check size={16} />}</span>
+                <label
+                  className={`checkpoint-achievement ${achievement.obtenido ? "earned" : ""}`}
+                  key={achievement._id}
+                >
+                  <input
+                    type="checkbox"
+                    checked={achievement.obtenido}
+                    disabled={updatingAchievement === achievement._id}
+                    onChange={() =>
+                      void toggleAchievement(achievement._id, achievement.obtenido)
+                    }
+                  />
+                  <span className={`achievement-medal medal-${index % 4}`}>
+                    <Trophy size={18} />
+                  </span>
+                  <span className="achievement-copy">
+                    <strong>{achievement.nombre}</strong>
+                    <small>
+                      {achievement.obtenido
+                        ? "Unlocked — nice work!"
+                        : "A new milestone to reach"}
+                    </small>
+                  </span>
+                  <span className="achievement-check">
+                    {achievement.obtenido && <Check size={16} />}
+                  </span>
                 </label>
               ))}
             </div>
           ) : (
-            <div className="achievement-no-items"><Sparkles size={25} /><p>No achievements added for this game yet.</p><Link to={`/games/${game._id}/edit`}>Add achievements <ArrowRight size={14} /></Link></div>
+            <div className="achievement-no-items">
+              <Sparkles size={25} />
+              <p>No achievements added for this game yet.</p>
+              <Link to={`/games/${game._id}/edit`}>
+                Add achievements <ArrowRight size={14} />
+              </Link>
+            </div>
           )}
         </section>
 
         <section className="checkpoint-history surface-card">
-          <div className="checkpoint-section-heading"><div><span className="page-kicker"><CalendarDays size={14} /> RECENT ADVENTURES</span><h2>Session history</h2></div><Link className="history-all-link" to="/sessions">ALL SESSIONS <ArrowRight size={14} /></Link></div>
+          <div className="checkpoint-section-heading">
+            <div>
+              <span className="page-kicker">
+                <CalendarDays size={14} /> RECENT ADVENTURES
+              </span>
+              <h2>Session history</h2>
+            </div>
+            <div className="history-actions">
+              <button
+                className="history-log-button"
+                type="button"
+                onClick={() => {
+                  setLoggingSession(true);
+                  setSessionMessage("");
+                }}
+                disabled={loggingSession}
+              >
+                <Plus size={14} aria-hidden="true" /> LOG HERE
+              </button>
+              <Link className="history-all-link" to="/sessions">
+                ALL SESSIONS <ArrowRight size={14} />
+              </Link>
+            </div>
+          </div>
+          {sessionMessage && !loggingSession && (
+            <p className="history-message" role="status">
+              {sessionMessage}
+            </p>
+          )}
+          {sessionError && (
+            <p className="history-error" role="alert">
+              {sessionError}
+            </p>
+          )}
+          {loggingSession && (
+            <SessionQuickForm
+              title="Log a session"
+              submitLabel="SAVE SESSION"
+              onSubmit={logSession}
+              onCancel={() => setLoggingSession(false)}
+            />
+          )}
           {sessions.length ? (
             <div className="checkpoint-session-list">
               {sessions.slice(0, 5).map(session => {
                 const sessionDate = new Date(session.fecha);
+                if (editingSessionId === session._id) {
+                  return (
+                    <SessionQuickForm
+                      key={session._id}
+                      title="Edit session"
+                      submitLabel="SAVE CHANGES"
+                      initial={{
+                        fecha: session.fecha,
+                        duracionMinutos: session.duracionMinutos,
+                        porcentajeAvance: session.porcentajeAvance,
+                        notas: session.notas
+                      }}
+                      onSubmit={values => editSession(session._id, values)}
+                      onCancel={() => setEditingSessionId(null)}
+                    />
+                  );
+                }
                 return (
                   <article className="checkpoint-session" key={session._id}>
-                    <span className="checkpoint-session-icon"><Gamepad2 size={17} /></span>
+                    <span className="checkpoint-session-icon">
+                      <Gamepad2 size={17} />
+                    </span>
                     <div className="checkpoint-session-main">
-                      <strong>{sessionDate.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}</strong>
-                      <span>{session.duracionMinutos} min played {session.notas ? `· ${session.notas}` : ""}</span>
+                      <strong>
+                        {sessionDate.toLocaleDateString(undefined, {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric"
+                        })}
+                      </strong>
+                      <span>
+                        {session.duracionMinutos} min played{" "}
+                        {session.notas ? `· ${session.notas}` : ""}
+                      </span>
                     </div>
-                    <span className="session-progress-pill" title="Progress gained this session">+{session.porcentajeAvance}%</span>
+                    <span
+                      className="session-progress-pill"
+                      title="Progress gained this session"
+                    >
+                      +{session.porcentajeAvance}%
+                    </span>
+                    {confirmDeleteId === session._id ? (
+                      <span className="session-row-confirm">
+                        <button
+                          type="button"
+                          onClick={() => setConfirmDeleteId(null)}
+                          disabled={deletingSessionId === session._id}
+                        >
+                          Keep
+                        </button>
+                        <button
+                          type="button"
+                          className="is-danger"
+                          onClick={() => void deleteSession(session._id)}
+                          disabled={deletingSessionId === session._id}
+                        >
+                          {deletingSessionId === session._id ? "Deleting..." : "Delete"}
+                        </button>
+                      </span>
+                    ) : (
+                      <>
+                        <button
+                          className="session-row-action is-edit"
+                          type="button"
+                          aria-label={`Edit session from ${sessionDate.toLocaleDateString()}`}
+                          onClick={() => {
+                            setEditingSessionId(session._id);
+                            setConfirmDeleteId(null);
+                            setSessionMessage("");
+                          }}
+                        >
+                          <Pencil size={15} aria-hidden="true" />
+                        </button>
+                        <button
+                          className="session-row-action"
+                          type="button"
+                          aria-label={`Delete session from ${sessionDate.toLocaleDateString()}`}
+                          onClick={() => setConfirmDeleteId(session._id)}
+                        >
+                          <Trash2 size={15} aria-hidden="true" />
+                        </button>
+                      </>
+                    )}
                   </article>
                 );
               })}
             </div>
           ) : (
-            <div className="checkpoint-history-empty"><Clock3 size={24} /><p>No sessions logged yet. This is where your journey will unfold.</p><Link to="/sessions">Log your first session <ArrowRight size={14} /></Link></div>
+            <div className="checkpoint-history-empty">
+              <Clock3 size={24} />
+              <p>No sessions logged yet. This is where your journey will unfold.</p>
+              <Link to="/sessions">
+                Log your first session <ArrowRight size={14} />
+              </Link>
+            </div>
           )}
         </section>
       </div>

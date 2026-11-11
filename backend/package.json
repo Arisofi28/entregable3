@@ -4,10 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "npm run build && node --test test/*.test.js",
+    "test": "npm run test:unit && npm run test:legacy",
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
-    "start": "node dist/server.js"
+    "start": "node dist/server.js",
+    "test:unit": "node --import tsx --test test/*.test.ts",
+    "test:legacy": "npm run build && node --test test/*.test.js"
   },
   "keywords": [],
   "author": "",
@@ -23,6 +25,8 @@
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/node": "^26.6.5",
+    "mongodb-memory-server-core": "^10.1.4",
+    "prettier": "^3.3.3",
     "tsx": "^4.23.15",
     "typescript": "^7.0.2"
   }

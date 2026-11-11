@@ -8,6 +8,7 @@ import { env } from "./config/env.js";
 // Rutas
 import videojuegosRoutes from "./routes/videojuegos.routes.js";
 import partidasRoutes from "./routes/partidas.routes.js";
+import metasRoutes from "./routes/metas.routes.js";
 
 // Middlewares
 import { requestId } from "./middlewares/requestId.js";
@@ -73,6 +74,12 @@ app.use("/api/videojuegos", videojuegosRoutes);
 // ========================================
 
 app.use("/api/partidas", partidasRoutes);
+
+// ========================================
+// 5b. RUTAS DE METAS (E2)
+// ========================================
+
+app.use("/api/metas", metasRoutes);
 
 // ========================================
 // 6. RUTA NO ENCONTRADA

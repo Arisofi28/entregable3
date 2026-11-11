@@ -1,80 +1,47 @@
-
 import mongoose from "mongoose";
 import { VideojuegoModel } from "../models/Videojuego.js";
+import { MetaModel } from "../models/Meta.js";
+import { PartidaModel } from "../models/Partida.js";
 import { AppError } from "../middlewares/AppError.js";
+
+// Estados que no admiten meta activa (E2 · RN-13)
+const ESTADOS_SIN_META = ["completado", "abandonado"];
 
 // VALIDAR OBJECTID
 export function validarId(id: string): void {
   if (!mongoose.isObjectIdOrHexString(id)) {
-    throw new AppError(
-      400,
-      "El identificador tiene un formato inválido"
-    );
+    throw new AppError(400, "El identificador tiene un formato inválido");
   }
 }
 
 // VALIDAR JSON
-function validarObjeto(
-  datos: unknown
-): asserts datos is Record<string, unknown> {
-  if (
-    !datos ||
-    typeof datos !== "object" ||
-    Array.isArray(datos)
-  ) {
-    throw new AppError(
-      400,
-      "Debes enviar un objeto JSON válido"
-    );
+function validarObjeto(datos: unknown): asserts datos is Record<string, unknown> {
+  if (!datos || typeof datos !== "object" || Array.isArray(datos)) {
+    throw new AppError(400, "Debes enviar un objeto JSON válido");
   }
 }
 
 // VALIDAR CAMPOS PERMITIDOS
-function validarCampos(
-  datos: Record<string, unknown>
-): void {
-  const permitidos = [
-    "nombre",
-    "plataforma",
-    "genero",
-    "estado",
-    "logros"
-  ];
+function validarCampos(datos: Record<string, unknown>): void {
+  const permitidos = ["nombre", "plataforma", "genero", "estado", "logros"];
 
-  const incorrectos = Object.keys(datos)
-    .filter(campo => !permitidos.includes(campo));
+  const incorrectos = Object.keys(datos).filter(campo => !permitidos.includes(campo));
 
   if (incorrectos.length > 0) {
-    throw new AppError(
-      400,
-      `Campos no permitidos: ${incorrectos.join(", ")}`
-    );
+    throw new AppError(400, `Campos no permitidos: ${incorrectos.join(", ")}`);
   }
 }
 
 // 1. LISTAR VIDEOJUEGOS
 
-export async function listarVideojuegos(
-  estado?: string
-) {
-  const estadosValidos = [
-    "jugando",
-    "pausado",
-    "completado",
-    "abandonado"
-  ] as const;
+export async function listarVideojuegos(estado?: string) {
+  const estadosValidos = ["jugando", "pausado", "completado", "abandonado"] as const;
 
-  type EstadoValido = typeof estadosValidos[number];
+  type EstadoValido = (typeof estadosValidos)[number];
 
   // Validar el estado recibido
-  if (
-    estado &&
-    !estadosValidos.includes(estado as EstadoValido)
-  ) {
-    throw new AppError(
-      400,
-      "El filtro estado no es válido"
-    );
+  if (estado && !estadosValidos.includes(estado as EstadoValido)) {
+    throw new AppError(400, "El filtro estado no es válido");
   }
 
   // Si existe un filtro, buscar por estado
@@ -85,32 +52,24 @@ export async function listarVideojuegos(
   }
 
   // Sin filtro, devolver todos los videojuegos
-  return VideojuegoModel.find()
-    .sort({ createdAt: -1 });
+  return VideojuegoModel.find().sort({ createdAt: -1 });
 }
 
 // 2. OBTENER VIDEOJUEGO POR ID
-export async function obtenerVideojuego(
-  id: string
-) {
+export async function obtenerVideojuego(id: string) {
   validarId(id);
 
   const videojuego = await VideojuegoModel.findById(id);
 
   if (!videojuego) {
-    throw new AppError(
-      404,
-      "Videojuego no encontrado"
-    );
+    throw new AppError(404, "Videojuego no encontrado");
   }
 
   return videojuego;
 }
 
 // 3. CREAR VIDEOJUEGO
-export async function crearVideojuego(
-  datos: unknown
-) {
+export async function crearVideojuego(datos: unknown) {
   validarObjeto(datos);
   validarCampos(datos);
 
@@ -118,19 +77,13 @@ export async function crearVideojuego(
 }
 
 // 4. ACTUALIZAR VIDEOJUEGO
-export async function actualizarVideojuego(
-  id: string,
-  datos: unknown
-) {
+export async function actualizarVideojuego(id: string, datos: unknown) {
   validarId(id);
   validarObjeto(datos);
   validarCampos(datos);
 
   if (Object.keys(datos).length === 0) {
-    throw new AppError(
-      400,
-      "Debes enviar al menos un campo"
-    );
+    throw new AppError(400, "Debes enviar al menos un campo");
   }
 
   const videojuego = await obtenerVideojuego(id);
@@ -139,24 +92,32 @@ export async function actualizarVideojuego(
 
   await videojuego.save();
 
+  // E2 · RN-13: un juego completado o abandonado no conserva meta activa
+  if (ESTADOS_SIN_META.includes(videojuego.estado)) {
+    await MetaModel.updateMany(
+      { videojuego: videojuego._id, activa: true },
+      { $set: { activa: false } }
+    );
+  }
+
   return videojuego;
 }
 
 // 5. ELIMINAR VIDEOJUEGO
-export async function eliminarVideojuego(
-  id: string
-) {
+export async function eliminarVideojuego(id: string) {
   validarId(id);
 
-  const videojuego =
-    await VideojuegoModel.findByIdAndDelete(id);
+  const videojuego = await VideojuegoModel.findByIdAndDelete(id);
 
   if (!videojuego) {
-    throw new AppError(
-      404,
-      "Videojuego no encontrado"
-    );
+    throw new AppError(404, "Videojuego no encontrado");
   }
+
+  // E2 · RN-14: no quedan metas huérfanas (con sus hitos embebidos)
+  await MetaModel.deleteMany({ videojuego: videojuego._id });
+
+  // D-01 · tampoco quedan partidas huérfanas
+  await PartidaModel.deleteMany({ videojuego: videojuego._id });
 
   return videojuego;
 }
@@ -171,24 +132,15 @@ export async function actualizarLogro(
   validarId(logroId);
 
   if (typeof obtenido !== "boolean") {
-    throw new AppError(
-      400,
-      "El campo obtenido debe ser boolean"
-    );
+    throw new AppError(400, "El campo obtenido debe ser boolean");
   }
 
-  const videojuego =
-    await obtenerVideojuego(videojuegoId);
+  const videojuego = await obtenerVideojuego(videojuegoId);
 
-  const logro = videojuego.logros.find(
-    item => String(item._id) === logroId
-  );
+  const logro = videojuego.logros.find(item => String(item._id) === logroId);
 
   if (!logro) {
-    throw new AppError(
-      404,
-      "Logro no encontrado"
-    );
+    throw new AppError(404, "Logro no encontrado");
   }
 
   logro.obtenido = obtenido;
