@@ -78,7 +78,7 @@ Tampoco: cuentas de usuario, varias metas activas por juego, metas globales (de 
 - S-01 Una sola persona usa la aplicación; no hay autenticación (igual que en E1).
 - S-02 El avance de cada partida es el **avance ganado en esa sesión**, como definió E1; el avance actual es su suma limitada a 100 %.
 - S-03 La fecha y hora de una partida es el momento en que **empezó**.
-- S-04 «Hoy» se determina con la hora de Ecuador del servidor, no con la del navegador.
+- S-04 «Hoy» es siempre el día actual en Ecuador, aunque el dispositivo de la persona tenga otra zona horaria.
 - S-05 Horas por semana admite decimales (por ejemplo 2,5 h).
 
 ## 8. Puntos abiertos
