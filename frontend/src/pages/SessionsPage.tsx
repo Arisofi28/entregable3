@@ -21,11 +21,7 @@ import {
   obtenerPartidas,
   obtenerResumenVideojuego
 } from "../services/partidasApi";
-import type {
-  CrearPartida,
-  Partida,
-  ResumenVideojuego
-} from "../services/partidasApi";
+import type { CrearPartida, Partida, ResumenVideojuego } from "../services/partidasApi";
 import "./SessionsPage.css";
 
 function localDateTimeValue(date: Date): string {
@@ -79,12 +75,14 @@ export default function SessionsPage() {
       });
       setSummaries(nextSummaries);
       setSummaryWarning(
-        failedSummaries
-          ? "Some game progress summaries are unavailable right now."
-          : ""
+        failedSummaries ? "Some game progress summaries are unavailable right now." : ""
       );
     } catch (loadError) {
-      setError(loadError instanceof Error ? loadError.message : "Could not load your session journal.");
+      setError(
+        loadError instanceof Error
+          ? loadError.message
+          : "Could not load your session journal."
+      );
     } finally {
       setLoading(false);
     }
@@ -121,7 +119,9 @@ export default function SessionsPage() {
       setNotes("");
       await loadData();
     } catch (saveError) {
-      setError(saveError instanceof Error ? saveError.message : "Could not save this session.");
+      setError(
+        saveError instanceof Error ? saveError.message : "Could not save this session."
+      );
     } finally {
       setSaving(false);
     }
@@ -137,7 +137,11 @@ export default function SessionsPage() {
       await loadData();
       setSuccess("Session removed from your journal.");
     } catch (deleteError) {
-      setError(deleteError instanceof Error ? deleteError.message : "Could not delete this session.");
+      setError(
+        deleteError instanceof Error
+          ? deleteError.message
+          : "Could not delete this session."
+      );
     } finally {
       setDeletingId(null);
     }
@@ -150,70 +154,143 @@ export default function SessionsPage() {
     <main className="sessions-page page-container">
       <header className="page-heading">
         <div>
-          <span className="page-kicker"><Sparkles size={15} /> YOUR GAMING JOURNAL</span>
+          <span className="page-kicker">
+            <Sparkles size={15} /> YOUR GAMING JOURNAL
+          </span>
           <h1>Sessions & memories</h1>
           <p>Every little step forward deserves a spot in your adventure log.</p>
         </div>
-        <button className="button secondary" type="button" onClick={refreshData} disabled={loading}><RefreshCw size={16} /> REFRESH</button>
+        <button
+          className="button secondary"
+          type="button"
+          onClick={refreshData}
+          disabled={loading}
+        >
+          <RefreshCw size={16} /> REFRESH
+        </button>
       </header>
 
-      {error && <div className="sessions-notice sessions-notice--error" role="alert"><p>{error}</p></div>}
+      {error && (
+        <div className="sessions-notice sessions-notice--error" role="alert">
+          <p>{error}</p>
+        </div>
+      )}
       {success && (
         <div className="sessions-notice sessions-notice--success" role="status">
           <CircleCheck size={19} aria-hidden="true" />
           <p>{success}</p>
         </div>
       )}
-      {summaryWarning && <div className="notice info" role="status">{summaryWarning}</div>}
+      {summaryWarning && (
+        <div className="notice info" role="status">
+          {summaryWarning}
+        </div>
+      )}
 
       <div className="sessions-layout">
         <section className="session-form-card">
           <div className="session-form-banner">
-            <span className="session-form-badge"><Plus size={16} /> NEW MEMORY</span>
+            <span className="session-form-badge">
+              <Plus size={16} /> NEW MEMORY
+            </span>
             <h2>Log a session</h2>
             <p>Save the highlights from your latest play.</p>
-            <span className="session-banner-icon" aria-hidden="true">🎮</span>
+            <span className="session-banner-icon" aria-hidden="true">
+              🎮
+            </span>
           </div>
           <form className="session-form" onSubmit={event => void submitSession(event)}>
             {games.length === 0 && !loading && (
               <div className="session-no-games">
                 <p>Add a game before logging a session.</p>
-                <Link to="/games/new">ADD A GAME <ArrowRight size={13} /></Link>
+                <Link to="/games/new">
+                  ADD A GAME <ArrowRight size={13} />
+                </Link>
               </div>
             )}
             <label className="session-field">
-              <span><Gamepad2 size={15} /> Game</span>
-              <select required value={gameId} onChange={event => setGameId(event.target.value)} disabled={!games.length}>
+              <span>
+                <Gamepad2 size={15} /> Game
+              </span>
+              <select
+                required
+                value={gameId}
+                onChange={event => setGameId(event.target.value)}
+                disabled={!games.length}
+              >
                 {games.length === 0 && <option value="">No games available</option>}
-                {games.map(game => <option value={game._id} key={game._id}>{game.nombre}</option>)}
+                {games.map(game => (
+                  <option value={game._id} key={game._id}>
+                    {game.nombre}
+                  </option>
+                ))}
               </select>
             </label>
             <label className="session-field">
-              <span><CalendarDays size={15} /> Date & time</span>
-              <input type="datetime-local" required value={date} onChange={event => setDate(event.target.value)} />
+              <span>
+                <CalendarDays size={15} /> Date & time
+              </span>
+              <input
+                type="datetime-local"
+                required
+                value={date}
+                onChange={event => setDate(event.target.value)}
+              />
             </label>
             <div className="session-field-row">
               <label className="session-field">
-                <span><Clock3 size={15} /> Duration (min)</span>
-                <input type="number" required min="1" step="1" value={duration} onChange={event => setDuration(event.target.value)} />
+                <span>
+                  <Clock3 size={15} /> Duration (min)
+                </span>
+                <input
+                  type="number"
+                  required
+                  min="1"
+                  step="1"
+                  value={duration}
+                  onChange={event => setDuration(event.target.value)}
+                />
               </label>
               <label className="session-field">
-                <span><Sparkles size={15} /> Progress gained this session (%)</span>
-                <input type="number" required min="0" max="100" step="any" value={progress} onChange={event => setProgress(event.target.value)} />
+                <span>
+                  <Sparkles size={15} /> Progress gained this session (%)
+                </span>
+                <input
+                  type="number"
+                  required
+                  min="0"
+                  max="100"
+                  step="any"
+                  value={progress}
+                  onChange={event => setProgress(event.target.value)}
+                />
               </label>
             </div>
             {gameId && (
               <p role="status">
-                Current game progress: {selectedGameSummary
+                Current game progress:{" "}
+                {selectedGameSummary
                   ? `${selectedGameSummary.porcentajeAvanceActual}%`
                   : "unavailable"}
               </p>
             )}
             <label className="session-field">
-              <span>Notes <small>Optional</small></span>
-              <textarea maxLength={500} rows={4} value={notes} onChange={event => setNotes(event.target.value)} placeholder="What happened on this adventure?" />
+              <span>
+                Notes <small>Optional</small>
+              </span>
+              <textarea
+                maxLength={500}
+                rows={4}
+                value={notes}
+                onChange={event => setNotes(event.target.value)}
+                placeholder="What happened on this adventure?"
+              />
             </label>
-            <button className="button session-submit" type="submit" disabled={saving || loading || !games.length}>
+            <button
+              className="button session-submit"
+              type="submit"
+              disabled={saving || loading || !games.length}
+            >
               <Plus size={17} /> {saving ? "SAVING SESSION..." : "SAVE SESSION"}
             </button>
           </form>
@@ -221,40 +298,107 @@ export default function SessionsPage() {
 
         <section className="session-history">
           <div className="session-history-heading">
-            <div><span className="page-kicker"><ScrollText size={14} /> THE PLAY LOG</span><h2>Recent adventures</h2></div>
-            <span className="session-count">{sessions.length} {sessions.length === 1 ? "SESSION" : "SESSIONS"}</span>
+            <div>
+              <span className="page-kicker">
+                <ScrollText size={14} /> THE PLAY LOG
+              </span>
+              <h2>Recent adventures</h2>
+            </div>
+            <span className="session-count">
+              {sessions.length} {sessions.length === 1 ? "SESSION" : "SESSIONS"}
+            </span>
           </div>
           {loading ? (
-            <div className="state-panel session-state" role="status"><RefreshCw className="session-spin" size={23} /><p>Opening your journal...</p></div>
+            <div className="state-panel session-state" role="status">
+              <RefreshCw className="session-spin" size={23} />
+              <p>Opening your journal...</p>
+            </div>
           ) : sessions.length === 0 ? (
             <div className="state-panel session-state">
-              <Gamepad2 size={31} /><h2>Your story starts here</h2>
-              <p>When you finish a play session, it’ll become a memory in this journal.</p>
+              <Gamepad2 size={31} />
+              <h2>Your story starts here</h2>
+              <p>
+                When you finish a play session, it’ll become a memory in this journal.
+              </p>
             </div>
           ) : (
             <div className="session-timeline">
               {sessions.map((session, index) => {
-                const populatedGame = typeof session.videojuego === "string" ? null : session.videojuego;
-                const title = populatedGame?.nombre ?? gameNames.get(gameIdForSession(session)) ?? "Game";
+                const populatedGame =
+                  typeof session.videojuego === "string" ? null : session.videojuego;
+                const title =
+                  populatedGame?.nombre ??
+                  gameNames.get(gameIdForSession(session)) ??
+                  "Game";
                 const sessionDate = new Date(session.fecha);
                 return (
                   <article className="memory-card" key={session._id}>
-                    <span className={`memory-marker memory-color-${index % 4}`}><Gamepad2 size={17} /></span>
+                    <span className={`memory-marker memory-color-${index % 4}`}>
+                      <Gamepad2 size={17} />
+                    </span>
                     <div className="memory-card-main">
                       <div className="memory-card-top">
                         <div>
-                          <span className="memory-date">{sessionDate.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })} · {sessionDate.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" })}</span>
-                          {populatedGame ? <Link className="memory-game-title" to={`/games/${gameIdForSession(session)}`}>{title}</Link> : <h3 className="memory-game-title">{title}</h3>}
+                          <span className="memory-date">
+                            {sessionDate.toLocaleDateString(undefined, {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric"
+                            })}{" "}
+                            ·{" "}
+                            {sessionDate.toLocaleTimeString(undefined, {
+                              hour: "numeric",
+                              minute: "2-digit"
+                            })}
+                          </span>
+                          {populatedGame ? (
+                            <Link
+                              className="memory-game-title"
+                              to={`/games/${gameIdForSession(session)}`}
+                            >
+                              {title}
+                            </Link>
+                          ) : (
+                            <h3 className="memory-game-title">{title}</h3>
+                          )}
                         </div>
-                        <button className="memory-delete" type="button" aria-label={`Delete session for ${title}`} disabled={deletingId === session._id} onClick={() => void deleteSession(session)}><Trash2 size={16} /></button>
+                        <button
+                          className="memory-delete"
+                          type="button"
+                          aria-label={`Delete session for ${title}`}
+                          disabled={deletingId === session._id}
+                          onClick={() => void deleteSession(session)}
+                        >
+                          <Trash2 size={16} />
+                        </button>
                       </div>
                       <div className="memory-stats">
-                        <span><Clock3 size={14} /> {session.duracionMinutos} min</span>
-                        <span><Sparkles size={14} /> +{session.porcentajeAvance}% gained this session</span>
+                        <span>
+                          <Clock3 size={14} /> {session.duracionMinutos} min
+                        </span>
+                        <span>
+                          <Sparkles size={14} /> +{session.porcentajeAvance}% gained this
+                          session
+                        </span>
                       </div>
                       <div className="memory-progress">
-                        <div className="progress-track" role="progressbar" aria-label={`${title} progress gained this session`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.max(0, Math.min(100, session.porcentajeAvance))}>
-                          <div className="progress-fill" style={{ width: `${Math.max(0, Math.min(100, session.porcentajeAvance))}%` }} />
+                        <div
+                          className="progress-track"
+                          role="progressbar"
+                          aria-label={`${title} progress gained this session`}
+                          aria-valuemin={0}
+                          aria-valuemax={100}
+                          aria-valuenow={Math.max(
+                            0,
+                            Math.min(100, session.porcentajeAvance)
+                          )}
+                        >
+                          <div
+                            className="progress-fill"
+                            style={{
+                              width: `${Math.max(0, Math.min(100, session.porcentajeAvance))}%`
+                            }}
+                          />
                         </div>
                       </div>
                       {session.notas && <p className="memory-notes">“{session.notas}”</p>}
