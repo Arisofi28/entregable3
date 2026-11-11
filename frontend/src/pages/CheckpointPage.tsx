@@ -19,6 +19,9 @@ import {
   obtenerResumenVideojuego
 } from "../services/partidasApi";
 import type { Partida, ResumenVideojuego } from "../services/partidasApi";
+import { obtenerProgresoSemanal } from "../services/metasApi";
+import type { ProgresoSemanal } from "../services/metasApi";
+import WeeklyProgress from "../components/WeeklyProgress";
 import "./CheckpointPage.css";
 
 const genreIcons: Record<string, string> = {
@@ -39,6 +42,26 @@ export default function CheckpointPage() {
   const [error, setError] = useState("");
   const [updatingAchievement, setUpdatingAchievement] = useState<string | null>(null);
   const [achievementError, setAchievementError] = useState("");
+  // E2 · progreso semanal (carga independiente del resto del detalle)
+  const [weeklyProgress, setWeeklyProgress] = useState<ProgresoSemanal | null>(null);
+  const [progressLoading, setProgressLoading] = useState(true);
+  const [progressError, setProgressError] = useState("");
+
+  const loadProgress = useCallback(async () => {
+    if (!id) return;
+    setProgressError("");
+    try {
+      setWeeklyProgress(await obtenerProgresoSemanal(id));
+    } catch (progressLoadError) {
+      setProgressError(
+        progressLoadError instanceof Error
+          ? progressLoadError.message
+          : "Please try again."
+      );
+    } finally {
+      setProgressLoading(false);
+    }
+  }, [id]);
 
   const loadCheckpoint = useCallback(async () => {
     if (!id) return;
@@ -63,6 +86,15 @@ export default function CheckpointPage() {
   useEffect(() => {
     void Promise.resolve().then(loadCheckpoint);
   }, [loadCheckpoint]);
+
+  useEffect(() => {
+    void Promise.resolve().then(loadProgress);
+  }, [loadProgress]);
+
+  function retryProgress() {
+    setProgressLoading(true);
+    void loadProgress();
+  }
 
   function retryCheckpoint() {
     setLoading(true);
@@ -233,6 +265,14 @@ export default function CheckpointPage() {
           </div>
         </article>
       </section>
+
+      <WeeklyProgress
+        progress={weeklyProgress}
+        loading={progressLoading}
+        error={progressError}
+        gameStatus={game.estado}
+        onRetry={retryProgress}
+      />
 
       {achievementError && (
         <div className="notice" role="alert">
