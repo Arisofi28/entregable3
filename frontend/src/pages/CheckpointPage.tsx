@@ -11,11 +11,14 @@ import {
   Power,
   RefreshCw,
   Sparkles,
+  Trash2,
   Trophy
 } from "lucide-react";
 import { actualizarLogro, obtenerVideojuego } from "../services/videojuegosApi";
 import type { Videojuego } from "../services/videojuegosApi";
 import {
+  crearPartida,
+  eliminarPartida,
   obtenerPartidasDeVideojuego,
   obtenerResumenVideojuego
 } from "../services/partidasApi";
@@ -29,6 +32,8 @@ import {
 import type { MetaEntrada, ProgresoSemanal } from "../services/metasApi";
 import WeeklyProgress from "../components/WeeklyProgress";
 import GoalForm from "../components/GoalForm";
+import SessionQuickForm from "../components/SessionQuickForm";
+import type { SessionValues } from "../components/SessionQuickForm";
 import "../components/GoalForm.css";
 import "./CheckpointPage.css";
 
@@ -59,6 +64,12 @@ export default function CheckpointPage() {
   const [deactivating, setDeactivating] = useState(false);
   const [goalError, setGoalError] = useState("");
   const [goalNotice, setGoalNotice] = useState("");
+  // T-12 · partidas desde el detalle
+  const [loggingSession, setLoggingSession] = useState(false);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [deletingSessionId, setDeletingSessionId] = useState<string | null>(null);
+  const [sessionMessage, setSessionMessage] = useState("");
+  const [sessionError, setSessionError] = useState("");
 
   const loadProgress = useCallback(async () => {
     if (!id) return;
@@ -107,6 +118,39 @@ export default function CheckpointPage() {
   function retryProgress() {
     setProgressLoading(true);
     void loadProgress();
+  }
+
+  // F-07 · tras cambiar una partida se vuelven a pedir resumen, partidas y progreso
+  async function refreshAfterSessionChange() {
+    await Promise.all([loadCheckpoint(), loadProgress()]);
+  }
+
+  async function logSession(values: SessionValues) {
+    if (!id) return;
+    await crearPartida({ videojuego: id, ...values });
+    setLoggingSession(false);
+    setSessionError("");
+    setSessionMessage("Session logged. Your week and streak are up to date.");
+    await refreshAfterSessionChange();
+  }
+
+  async function deleteSession(sessionId: string) {
+    setDeletingSessionId(sessionId);
+    setSessionError("");
+    try {
+      await eliminarPartida(sessionId);
+      setConfirmDeleteId(null);
+      setSessionMessage("Session deleted. Your week was recalculated.");
+      await refreshAfterSessionChange();
+    } catch (deleteError) {
+      setSessionError(
+        deleteError instanceof Error
+          ? deleteError.message
+          : "Could not delete this session."
+      );
+    } finally {
+      setDeletingSessionId(null);
+    }
   }
 
   function openGoalForm(mode: "create" | "edit") {
@@ -481,10 +525,41 @@ export default function CheckpointPage() {
               </span>
               <h2>Session history</h2>
             </div>
-            <Link className="history-all-link" to="/sessions">
-              ALL SESSIONS <ArrowRight size={14} />
-            </Link>
+            <div className="history-actions">
+              <button
+                className="history-log-button"
+                type="button"
+                onClick={() => {
+                  setLoggingSession(true);
+                  setSessionMessage("");
+                }}
+                disabled={loggingSession}
+              >
+                <Plus size={14} aria-hidden="true" /> LOG HERE
+              </button>
+              <Link className="history-all-link" to="/sessions">
+                ALL SESSIONS <ArrowRight size={14} />
+              </Link>
+            </div>
           </div>
+          {sessionMessage && !loggingSession && (
+            <p className="history-message" role="status">
+              {sessionMessage}
+            </p>
+          )}
+          {sessionError && (
+            <p className="history-error" role="alert">
+              {sessionError}
+            </p>
+          )}
+          {loggingSession && (
+            <SessionQuickForm
+              title="Log a session"
+              submitLabel="SAVE SESSION"
+              onSubmit={logSession}
+              onCancel={() => setLoggingSession(false)}
+            />
+          )}
           {sessions.length ? (
             <div className="checkpoint-session-list">
               {sessions.slice(0, 5).map(session => {
@@ -513,6 +588,34 @@ export default function CheckpointPage() {
                     >
                       +{session.porcentajeAvance}%
                     </span>
+                    {confirmDeleteId === session._id ? (
+                      <span className="session-row-confirm">
+                        <button
+                          type="button"
+                          onClick={() => setConfirmDeleteId(null)}
+                          disabled={deletingSessionId === session._id}
+                        >
+                          Keep
+                        </button>
+                        <button
+                          type="button"
+                          className="is-danger"
+                          onClick={() => void deleteSession(session._id)}
+                          disabled={deletingSessionId === session._id}
+                        >
+                          {deletingSessionId === session._id ? "Deleting..." : "Delete"}
+                        </button>
+                      </span>
+                    ) : (
+                      <button
+                        className="session-row-action"
+                        type="button"
+                        aria-label={`Delete session from ${sessionDate.toLocaleDateString()}`}
+                        onClick={() => setConfirmDeleteId(session._id)}
+                      >
+                        <Trash2 size={15} aria-hidden="true" />
+                      </button>
+                    )}
                   </article>
                 );
               })}
